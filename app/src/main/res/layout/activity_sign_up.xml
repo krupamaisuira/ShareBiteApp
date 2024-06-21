@@ -14,29 +14,33 @@
         />
 
     <EditText
-        android:id="@+id/username"
+        android:id="@+id/txtusername"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="User name"
         android:inputType="text"
         android:layout_margin="5dp"
+        android:maxLength="20"
         />
 
     <EditText
-        android:id="@+id/mobile_number"
+        android:id="@+id/txtmobile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Mobile Number"
         android:inputType="phone"
-        android:layout_margin="5dp"/>
+        android:layout_margin="5dp"
+        android:maxLength="10"
+        />
 
     <EditText
-        android:id="@+id/email_address"
+        android:id="@+id/txtemail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Email Address"
         android:inputType="textEmailAddress"
-        android:layout_margin="5dp"/>
+        android:layout_margin="5dp"
+        android:maxLength="50"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -51,7 +55,8 @@
             android:hint="Password"
             android:inputType="textPassword"
             android:minHeight="48dp"
-            android:paddingEnd="48dp" />
+            android:paddingEnd="48dp"
+            android:maxLength="10"/>
 
         <ImageView
             android:id="@+id/eye_password"
@@ -75,7 +80,8 @@
             android:hint="Confirm Password"
             android:inputType="textPassword"
             android:minHeight="48dp"
-            android:paddingEnd="48dp" />
+            android:paddingEnd="48dp"
+            android:maxLength="10"/>
 
         <ImageView
             android:id="@+id/eye_confpassword"
@@ -89,14 +95,14 @@
 
 
     <CheckBox
-        android:id="@+id/terms_and_conditions"
+        android:id="@+id/chkterms"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="I accept the terms and conditions!"
         android:layout_margin="4dp"/>
 
     <Button
-        android:id="@+id/sign_up"
+        android:id="@+id/btnsignup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Sign up"
@@ -112,11 +118,12 @@
         android:layout_gravity="center"/>
 
     <TextView
-        android:layout_marginTop="50dp"
+        android:padding="5dp"
+        android:layout_marginTop="35dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="By registering, I acknowledge that I have read and accept the General Terms and conditions of Use and the privacy policy."
         android:textSize="12sp"
-        android:textColor="@android:color/darker_gray" />
+        />
 
 </LinearLayout>
