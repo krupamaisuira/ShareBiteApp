@@ -69,7 +69,7 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
-        
+
         // endregion
 
 
@@ -156,6 +156,7 @@ public class SignUpActivity extends AppCompatActivity {
             return;
         }
         User newUser = new User(reference.push().getKey(),username,mobile,email,password);
+        Toast.makeText(SignUpActivity.this,"is del :" + newUser.getDeleted(),Toast.LENGTH_SHORT).show();
         reference.child("users").child(newUser.getUserID()).setValue(newUser)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

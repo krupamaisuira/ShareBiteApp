@@ -2,6 +2,7 @@ package com.example.sharebiteapp.ModelData;
 
 public class User {
     String userID,username,mobilenumber,email,password;
+    Boolean isDeleted,isNotify;
 
     public User(String userID,String username, String mobilenumber, String email, String password) {
         this.userID = userID;
@@ -9,6 +10,16 @@ public class User {
         this.mobilenumber = mobilenumber;
         this.email = email;
         this.password = password;
+        this.isDeleted = false;
+        this.isNotify =  true;
+    }
+
+    public Boolean getDeleted() {
+        return isDeleted;
+    }
+
+    public Boolean getNotify() {
+        return isNotify;
     }
 
     public String getUserID() {
