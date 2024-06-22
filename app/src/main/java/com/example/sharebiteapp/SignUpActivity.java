@@ -18,10 +18,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sharebiteapp.ModelData.User;
+import com.example.sharebiteapp.Utility.UserExistenceCallback;
+import com.example.sharebiteapp.Utility.Utils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 public class SignUpActivity extends AppCompatActivity {
      EditText txtpwd,txtconfpwd,txtusername,txtmobile,txtemail;
@@ -77,14 +83,14 @@ public class SignUpActivity extends AppCompatActivity {
         eye_password.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                togglePasswordVisibility(txtpwd, eye_password);
+                Utils.togglePasswordVisibility(txtpwd, eye_password);
             }
         });
 
         eye_confpassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                togglePasswordVisibility(txtconfpwd, eye_confpassword);
+                Utils.togglePasswordVisibility(txtconfpwd, eye_confpassword);
             }
         });
         //endregion
@@ -140,7 +146,7 @@ public class SignUpActivity extends AppCompatActivity {
             txtpwd.requestFocus();
             return;
         }
-        else if (!isValidPassword(password)) {
+        else if (!Utils.isValidPassword(password)) {
             txtpwd.setError("Password must contain at least one letter and one digit");
             txtpwd.requestFocus();
             return;
@@ -155,57 +161,45 @@ public class SignUpActivity extends AppCompatActivity {
             Toast.makeText(SignUpActivity.this, "Please accept terms and conditions", Toast.LENGTH_SHORT).show();
             return;
         }
-        User newUser = new User(reference.push().getKey(),username,mobile,email,password);
-        Toast.makeText(SignUpActivity.this,"is del :" + newUser.getDeleted(),Toast.LENGTH_SHORT).show();
-        reference.child("users").child(newUser.getUserID()).setValue(newUser)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Toast.makeText(SignUpActivity.this, "User registered successfully", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
-                        startActivity(intent);
-                        finish();
 
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(SignUpActivity.this, "registered failed ! please try after sometimes.", Toast.LENGTH_SHORT).show();
-                    }
-                });
+      Utils.checkUserExists(SignUpActivity.this,username,email,new UserExistenceCallback() {
 
+
+          @Override
+          public void onResult(boolean exists, DataSnapshot snapshot) {
+              if(exists)
+              {
+                  Toast.makeText(SignUpActivity.this, "Username or Email already exists! Try another one.", Toast.LENGTH_SHORT).show();
+              }
+              else
+              {
+                  //add in database
+                  User newUser = new User(reference.push().getKey(),username,mobile,email,password);
+                  //        Toast.makeText(SignUpActivity.this,"is del :" + newUser.getDeleted(),Toast.LENGTH_SHORT).show();
+                  reference.child("users").child(newUser.getUserID()).setValue(newUser)
+                          .addOnSuccessListener(new OnSuccessListener<Void>() {
+                              @Override
+                              public void onSuccess(Void aVoid) {
+                                  Toast.makeText(SignUpActivity.this, "User registered successfully", Toast.LENGTH_SHORT).show();
+                                  Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
+                                  startActivity(intent);
+                                  finish();
+
+                              }
+                          }).addOnFailureListener(new OnFailureListener() {
+                              @Override
+                              public void onFailure(@NonNull Exception e) {
+                                  Toast.makeText(SignUpActivity.this, "registered failed ! please try after sometimes.", Toast.LENGTH_SHORT).show();
+                              }
+                          });
+
+              }
+          }
+      });
 
     }
 
-    private boolean isValidPassword(String password) {
-        boolean hasLetter = false;
-        boolean hasDigit = false;
-        for (int i = 0; i < password.length(); i++) {
-            if (Character.isLetter(password.charAt(i))) {
-                hasLetter = true;
-            } else if (Character.isDigit(password.charAt(i))) {
-                hasDigit = true;
-            }
-            if (hasLetter && hasDigit) {
-                return true;
-            }
-        }
-        return false;
-    }
 
-    //toggle to text of password hide and show
-    private void togglePasswordVisibility(EditText editText, ImageView imageView) {
-        if (editText.getTransformationMethod().equals(PasswordTransformationMethod.getInstance())) {
-            // Show Password
-            editText.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-            imageView.setImageResource(R.drawable.hidden);
-        } else {
-            // Hide Password
-            editText.setTransformationMethod(PasswordTransformationMethod.getInstance());
-            imageView.setImageResource(R.drawable.eye);
-        }
-        // Move the cursor to the end of the text
-        editText.setSelection(editText.getText().length());
-    }
-    //endregion
+
+
 }
