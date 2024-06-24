@@ -20,6 +20,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class Utils {
 
 
@@ -38,6 +42,10 @@ public class Utils {
         }
         return false;
     }
+    public static String getCurrentDatetime() {
+        SimpleDateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        return datetimeFormat.format(new Date());
+    }
     public static void togglePasswordVisibility(EditText editText, ImageView imageView) {
         if (editText.getTransformationMethod().equals(PasswordTransformationMethod.getInstance())) {
             // Show Password
@@ -52,6 +60,7 @@ public class Utils {
         editText.setSelection(editText.getText().length());
     }
 
+    // region check user  in database
     public static void checkUserExists(Context context,String username,String email, final UserExistenceCallback callback) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
 
@@ -64,7 +73,7 @@ public class Utils {
                     DataSnapshot userSnapshot = usernameSnapshot.getChildren().iterator().next(); // Get the single user snapshot
 
 
-                    Boolean isDeleted = userSnapshot.child("deleted").getValue(Boolean.class);
+                    Boolean isDeleted = userSnapshot.child("profiledeleted").getValue(Boolean.class);
                     if (isDeleted != null && !isDeleted) {
                         callback.onResult(true, usernameSnapshot);
                     }
@@ -82,7 +91,7 @@ public class Utils {
                             if (emailSnapshot.exists()) {
                                 DataSnapshot userSnapshot = emailSnapshot.getChildren().iterator().next(); // Get the single user snapshot
 
-                                Boolean isDeleted = userSnapshot.child("deleted").getValue(Boolean.class);
+                                Boolean isDeleted = userSnapshot.child("profiledeleted").getValue(Boolean.class);
                                 if (isDeleted != null && !isDeleted) {
                                     callback.onResult(true, emailSnapshot);
 
@@ -110,6 +119,6 @@ public class Utils {
             }
         });
     }
-
+    // endregion
 
 }

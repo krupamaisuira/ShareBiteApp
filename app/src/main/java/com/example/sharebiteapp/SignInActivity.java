@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sharebiteapp.ModelData.User;
+import com.example.sharebiteapp.Utility.SessionManager;
 import com.example.sharebiteapp.Utility.UserExistenceCallback;
 import com.example.sharebiteapp.Utility.Utils;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -31,6 +32,7 @@ public class SignInActivity extends AppCompatActivity {
     Button btnforgotpwd,btnsignin;
     TextView btnregister;
     ImageView eye_loginpwd;
+    private SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,7 @@ public class SignInActivity extends AppCompatActivity {
         btnsignin = findViewById(R.id.btnsignin);
         btnregister = findViewById(R.id.btnregister);
         eye_loginpwd = findViewById(R.id.eye_loginpwd);
+        sessionManager = SessionManager.getInstance(this);
 
         //region button click
         btnregister.setOnClickListener(new View.OnClickListener() {
@@ -168,8 +171,14 @@ public class SignInActivity extends AppCompatActivity {
 
         String dbPassword = userSnapshot.child("password").getValue(String.class);
             if (dbPassword != null && dbPassword.equals(password)) {
+                String userID =  userSnapshot.child("userID").getValue(String.class);
+                String username =  userSnapshot.child("username").getValue(String.class);
+                String email =  userSnapshot.child("email").getValue(String.class);
+                Boolean notification = userSnapshot.child("notification").getValue(Boolean.class);
+                sessionManager.loginUser(userID,username,email,notification);
+
                 userValid = true;
-                Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+                Intent intent = new Intent(SignInActivity.this, ProfileActivity.class);
                 startActivity(intent);
                 finish();
 

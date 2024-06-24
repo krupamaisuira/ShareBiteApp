@@ -175,7 +175,7 @@ public class SignUpActivity extends AppCompatActivity {
               {
                   //add in database
                   User newUser = new User(reference.push().getKey(),username,mobile,email,password);
-                  //        Toast.makeText(SignUpActivity.this,"is del :" + newUser.getDeleted(),Toast.LENGTH_SHORT).show();
+                   Toast.makeText(SignUpActivity.this,"date " + newUser.getCreatedon(),Toast.LENGTH_SHORT).show();
                   reference.child("users").child(newUser.getUserID()).setValue(newUser)
                           .addOnSuccessListener(new OnSuccessListener<Void>() {
                               @Override
