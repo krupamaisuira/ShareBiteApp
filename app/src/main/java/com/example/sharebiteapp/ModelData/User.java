@@ -1,8 +1,12 @@
 package com.example.sharebiteapp.ModelData;
 
+import com.example.sharebiteapp.Utility.Utils;
+
 public class User {
-    String userID,username,mobilenumber,email,password;
-    Boolean deleted,notification;
+    String userID,username,mobilenumber,email,password,createdon;
+    Boolean profiledeleted,notification;
+
+
 
     public User(String userID,String username, String mobilenumber, String email, String password) {
         this.userID = userID;
@@ -10,13 +14,21 @@ public class User {
         this.mobilenumber = mobilenumber;
         this.email = email;
         this.password = password;
-        this.deleted = false;
+        this.profiledeleted = false;
         this.notification =  true;
+        this.createdon = Utils.getCurrentDatetime();
+
     }
 
-    public Boolean getDeleted() {
-        return deleted;
+    public String getCreatedon() {
+        return createdon;
     }
+
+    public Boolean getProfiledeleted() {
+        return profiledeleted;
+    }
+
+
 
     public Boolean getNotification() {
         return notification;
@@ -61,4 +73,6 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+
+
 }
