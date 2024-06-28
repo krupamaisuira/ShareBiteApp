@@ -161,17 +161,20 @@ public class SignInActivity extends AppCompatActivity {
 
                            @Override
                            public void onFailure(String errMessage) {
+                               txtloginpwd.setText("");
                                Toast.makeText(SignInActivity.this, "Invalid email address and password", Toast.LENGTH_SHORT).show();
                            }
                        });
                    }
                    else
                    {
+                       txtloginpwd.setText("");
                        Toast.makeText(SignInActivity.this, "Invalid email address and password", Toast.LENGTH_SHORT).show();
                    }
                }
                else
                {
+                   txtloginpwd.setText("");
                    Toast.makeText(SignInActivity.this, "Invalid email address and password", Toast.LENGTH_SHORT).show();
                }
            }

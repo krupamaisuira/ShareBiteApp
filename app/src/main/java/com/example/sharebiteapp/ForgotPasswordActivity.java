@@ -68,6 +68,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                         }
                         else
                         {
+                            txtfgtpwdemail.setText("");
                             Toast.makeText(getApplicationContext(), "Fail to send reset password email! Please try again", Toast.LENGTH_SHORT).show();
                         }
                     }
