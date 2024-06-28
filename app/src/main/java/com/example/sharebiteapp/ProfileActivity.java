@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.sharebiteapp.Utility.SessionManager;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -33,6 +34,7 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 sessionManager.logoutUser();
+                FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(ProfileActivity.this, SignInActivity.class);
                 startActivity(intent);
                 finish();
