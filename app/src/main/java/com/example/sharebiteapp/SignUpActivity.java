@@ -6,8 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.text.method.HideReturnsTransformationMethod;
-import android.text.method.PasswordTransformationMethod;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -18,16 +16,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.sharebiteapp.ModelData.User;
-import com.example.sharebiteapp.Utility.UserExistenceCallback;
+import com.example.sharebiteapp.Interface.OperationCallback;
+import com.example.sharebiteapp.Utility.UserService;
 import com.example.sharebiteapp.Utility.Utils;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class SignUpActivity extends AppCompatActivity {
      EditText txtpwd,txtconfpwd,txtusername,txtmobile,txtemail;
@@ -35,10 +31,9 @@ public class SignUpActivity extends AppCompatActivity {
      Button btnsignup;
      TextView btnlogin;
      CheckBox chkterms;
-    FirebaseDatabase database;
-    DatabaseReference reference;
+     FirebaseAuth mAuth;
 
-
+     UserService userService;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,10 +50,11 @@ public class SignUpActivity extends AppCompatActivity {
         eye_confpassword = findViewById(R.id.eye_confpassword);
         chkterms = findViewById(R.id.chkterms);
 
-        database = FirebaseDatabase.getInstance();
-        reference = database.getReference();
+        userService = new UserService();
+        mAuth = FirebaseAuth.getInstance();
 
-       //region button on click
+
+        //region button on click
         btnsignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -162,43 +158,42 @@ public class SignUpActivity extends AppCompatActivity {
             return;
         }
 
-      Utils.checkUserExists(SignUpActivity.this,username,email,new UserExistenceCallback() {
+     mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+         @Override
+         public void onComplete(@NonNull Task<AuthResult> task) {
+             if(task.isSuccessful())
+             {
+                 FirebaseUser currentUser = mAuth.getCurrentUser();
+                 if (currentUser != null) {
+                     String uid = currentUser.getUid();
+                     User user = new User(uid, username,mobile, email);
+                     userService.createUser(user, new OperationCallback() {
+                         @Override
+                         public void onSuccess() {
+                             Toast.makeText(SignUpActivity.this, "User registered successfully", Toast.LENGTH_SHORT).show();
+                             Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
+                             startActivity(intent);
+                             finish();
+                         }
 
+                         @Override
+                         public void onFailure(String errMessage) {
+                             Toast.makeText(SignUpActivity.this, "Sign up failed! Please try again later.", Toast.LENGTH_SHORT).show();
+                         }
+                     });
+                 }else {
+                     Toast.makeText(SignUpActivity.this, "Sign up failed! Please try again later.", Toast.LENGTH_SHORT).show();
+                 }
 
-          @Override
-          public void onResult(boolean exists, DataSnapshot snapshot) {
-              if(exists)
-              {
-                  Toast.makeText(SignUpActivity.this, "Username or Email already exists! Try another one.", Toast.LENGTH_SHORT).show();
-              }
-              else
-              {
-                  //add in database
-                  User newUser = new User(reference.push().getKey(),username,mobile,email,password);
-                   Toast.makeText(SignUpActivity.this,"date " + newUser.getCreatedon(),Toast.LENGTH_SHORT).show();
-                  reference.child("users").child(newUser.getUserID()).setValue(newUser)
-                          .addOnSuccessListener(new OnSuccessListener<Void>() {
-                              @Override
-                              public void onSuccess(Void aVoid) {
-                                  Toast.makeText(SignUpActivity.this, "User registered successfully", Toast.LENGTH_SHORT).show();
-                                  Intent intent = new Intent(SignUpActivity.this, SignInActivity.class);
-                                  startActivity(intent);
-                                  finish();
-
-                              }
-                          }).addOnFailureListener(new OnFailureListener() {
-                              @Override
-                              public void onFailure(@NonNull Exception e) {
-                                  Toast.makeText(SignUpActivity.this, "registered failed ! please try after sometimes.", Toast.LENGTH_SHORT).show();
-                              }
-                          });
-
-              }
-          }
-      });
+             }
+             else
+             {
+                 Toast.makeText(SignUpActivity.this, "Sign up failed! Please try again later.", Toast.LENGTH_SHORT).show();
+             }
+         }
+     });
 
     }
-
 
 
 

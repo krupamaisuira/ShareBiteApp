@@ -3,17 +3,20 @@ package com.example.sharebiteapp.ModelData;
 import com.example.sharebiteapp.Utility.Utils;
 
 public class User {
-    String userID,username,mobilenumber,email,password,createdon;
+    String userID,username,mobilenumber,email,createdon;
     Boolean profiledeleted,notification;
 
+    public User()
+    {
 
+    }
 
-    public User(String userID,String username, String mobilenumber, String email, String password) {
+    public User(String userID,String username, String mobilenumber, String email) {
         this.userID = userID;
         this.username = username;
         this.mobilenumber = mobilenumber;
         this.email = email;
-        this.password = password;
+
         this.profiledeleted = false;
         this.notification =  true;
         this.createdon = Utils.getCurrentDatetime();
@@ -66,13 +69,7 @@ public class User {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
 
 }

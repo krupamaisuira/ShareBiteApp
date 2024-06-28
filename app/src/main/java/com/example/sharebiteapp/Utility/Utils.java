@@ -60,65 +60,6 @@ public class Utils {
         editText.setSelection(editText.getText().length());
     }
 
-    // region check user  in database
-    public static void checkUserExists(Context context,String username,String email, final UserExistenceCallback callback) {
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
 
-        // Query for username
-        Query usernameQuery = reference.orderByChild("username").equalTo(username);
-        usernameQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot usernameSnapshot) {
-                if (usernameSnapshot.exists()) {
-                    DataSnapshot userSnapshot = usernameSnapshot.getChildren().iterator().next(); // Get the single user snapshot
-
-
-                    Boolean isDeleted = userSnapshot.child("profiledeleted").getValue(Boolean.class);
-                    if (isDeleted != null && !isDeleted) {
-                        callback.onResult(true, usernameSnapshot);
-                    }
-                    else {
-
-                        callback.onResult(false,null);
-                    }
-
-                } else {
-                    // Query for email
-                    Query emailQuery = reference.orderByChild("email").equalTo(email);
-                    emailQuery.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot emailSnapshot) {
-                            if (emailSnapshot.exists()) {
-                                DataSnapshot userSnapshot = emailSnapshot.getChildren().iterator().next(); // Get the single user snapshot
-
-                                Boolean isDeleted = userSnapshot.child("profiledeleted").getValue(Boolean.class);
-                                if (isDeleted != null && !isDeleted) {
-                                    callback.onResult(true, emailSnapshot);
-
-                                }
-
-                            } else {
-                                // Neither username nor email exists
-                                callback.onResult(false,null);
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                            // Handle possible errors.
-                            Toast.makeText(context, "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle possible errors.
-                Toast.makeText(context, "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-    // endregion
 
 }
