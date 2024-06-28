@@ -12,7 +12,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    TextView txtLogout,txtprofileuser;
+    TextView txtLogout,txtprofileuser,txtchangepwd;
     private SessionManager sessionManager;
 
     @Override
@@ -22,6 +22,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         txtLogout = findViewById(R.id.txtLogout);
         txtprofileuser = findViewById(R.id.txtprofileusername);
+        txtchangepwd = findViewById(R.id.txtchangepwd);
 
         sessionManager = SessionManager.getInstance(this);
 
@@ -36,6 +37,15 @@ public class ProfileActivity extends AppCompatActivity {
                 sessionManager.logoutUser();
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(ProfileActivity.this, SignInActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        txtchangepwd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ProfileActivity.this, ChangePasswordActivity.class);
                 startActivity(intent);
                 finish();
             }
