@@ -5,13 +5,13 @@ import android.content.SharedPreferences;
 
 public class SessionManager {
     private static SessionManager instance;
-    private SharedPreferences sharedPreferences;
-    private SharedPreferences.Editor editor;
+    private SharedPreferences sessionsharedPreferences;
+    private SharedPreferences.Editor sessioneditor;
 
 
     private SessionManager(Context context) {
-        sharedPreferences = context.getSharedPreferences("UserManager", Context.MODE_PRIVATE);
-        editor = sharedPreferences.edit();
+        sessionsharedPreferences = context.getSharedPreferences("UserManager", Context.MODE_PRIVATE);
+        sessioneditor = sessionsharedPreferences.edit();
     }
 
     public static synchronized SessionManager getInstance(Context context) {
@@ -22,32 +22,38 @@ public class SessionManager {
     }
 
     public void loginUser(String userID,String username, String email,Boolean notification) {
-        editor.putString("userID", userID);
-        editor.putString("userName", username);
-        editor.putString("email", email);
-        editor.putBoolean("notification", notification);
-        editor.putBoolean("UserLoggedIn", true);
-        editor.apply();
+        sessioneditor.putString("userID", userID);
+        sessioneditor.putString("userName", username);
+        sessioneditor.putString("email", email);
+        sessioneditor.putBoolean("notification", notification);
+        sessioneditor.putBoolean("UserLoggedIn", true);
+        sessioneditor.apply();
     }
     public String getUserID() {
-        return sharedPreferences.getString("userID", "");
+        return sessionsharedPreferences.getString("userID", "");
     }
     public String getUsername() {
-        return sharedPreferences.getString("userName", "");
+        return sessionsharedPreferences.getString("userName", "");
     }
 
     public String getEmail() {
-        return sharedPreferences.getString("email", "");
+        return sessionsharedPreferences.getString("email", "");
     }
     public boolean getNotificationStatus() {
-        return sharedPreferences.getBoolean("notification", false);
+        return sessionsharedPreferences.getBoolean("notification", false);
     }
+
+    public void setNotificationStatus(boolean notification) {
+        sessioneditor.putBoolean("notification", notification);
+        sessioneditor.apply();
+    }
+
     public boolean userLoggedIn() {
-        return sharedPreferences.getBoolean("UserLoggedIn", false);
+        return sessionsharedPreferences.getBoolean("UserLoggedIn", false);
     }
     public void logoutUser() {
-        editor.clear();
-        editor.apply();
+        sessioneditor.clear();
+        sessioneditor.apply();
     }
 }
 

@@ -6,8 +6,10 @@ import androidx.annotation.NonNull;
 import com.example.sharebiteapp.Interface.OperationCallback;
 import com.example.sharebiteapp.Interface.UserCallback;
 import com.example.sharebiteapp.ModelData.User;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -67,6 +69,58 @@ public class UserService implements IUser {
 
             @Override
             public void onCancelled(@NonNull DatabaseError e) {
+                if (callback != null) {
+                    callback.onFailure(e.getMessage());
+                }
+            }
+        });
+    }
+
+    public void deleteProfile(String uid,OperationCallback callback)
+    {
+        reference.child(_collectionName).child(uid).child("profiledeleted").setValue(true).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                if (callback != null) {
+                    callback.onSuccess();
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (callback != null) {
+                    callback.onFailure(e.getMessage());
+                }
+            }
+        });
+    }
+
+    public void setbackdeleteProfile(String uid)
+    {
+        reference.child(_collectionName).child(uid).child("profiledeleted").setValue(false).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+    }
+    public void setNotification(String uid,Boolean notify,OperationCallback callback)
+    {
+        reference.child(_collectionName).child(uid).child("notification").setValue(notify).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                if (callback != null) {
+                    callback.onSuccess();
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
                 if (callback != null) {
                     callback.onFailure(e.getMessage());
                 }

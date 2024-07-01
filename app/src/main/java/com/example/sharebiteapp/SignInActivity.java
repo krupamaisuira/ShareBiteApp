@@ -143,9 +143,9 @@ public class SignInActivity extends AppCompatActivity {
                {
 
                    if (chkrememberMe.isChecked()) {
-                       saveCredentials(usernameEmailLogin, true);
+                       Utils.saveCredentials(SignInActivity.this, usernameEmailLogin, true);
                    } else {
-                       saveCredentials("", false);
+                       Utils.saveCredentials(SignInActivity.this,"", false);
                    }
                    FirebaseUser user = mAuth.getCurrentUser();
                    if (user != null) {
@@ -185,13 +185,7 @@ public class SignInActivity extends AppCompatActivity {
 
     }
 
-    private void saveCredentials(String email, boolean rememberMe) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("email", email);
-        editor.putBoolean("rememberMe", rememberMe);
-        editor.apply();
-    }
+
 
 
     //endregion
