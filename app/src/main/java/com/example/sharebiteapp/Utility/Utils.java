@@ -2,6 +2,8 @@ package com.example.sharebiteapp.Utility;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.widget.EditText;
@@ -59,7 +61,13 @@ public class Utils {
         // Move the cursor to the end of the text
         editText.setSelection(editText.getText().length());
     }
-
+    public static void saveCredentials(Context context, String email, boolean rememberMe) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("email", email);
+        editor.putBoolean("rememberMe", rememberMe);
+        editor.apply();
+    }
 
 
 }
