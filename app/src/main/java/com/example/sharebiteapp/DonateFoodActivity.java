@@ -24,7 +24,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseUser;
 
-public class DonateFoodActivity extends AppCompatActivity {
+public class DonateFoodActivity extends MenuBarActivity {
      Button btndonate;
      EditText txttitle,txtdesc,txtbtbefore,txtprice;
     private SessionManager sessionManager;
