@@ -23,7 +23,7 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class ChangePasswordActivity extends AppCompatActivity {
+public class ChangePasswordActivity extends MenuBarActivity {
     EditText txtcurrentpwd,txtnewpwd,txtnewconfpwd;
     ImageView eye_currentpwd,eye_newpwd,eye_newconfpwd;
     Button btnchangepwd;
