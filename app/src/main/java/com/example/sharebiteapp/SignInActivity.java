@@ -154,7 +154,7 @@ public class SignInActivity extends AppCompatActivity {
                            @Override
                            public void onSuccess(User user) {
                                sessionManager.loginUser(user.getUserID(),user.getUsername(),user.getEmail(),user.getNotification());
-                               Intent intent = new Intent(SignInActivity.this, ProfileActivity.class);
+                               Intent intent = new Intent(SignInActivity.this, DashboardActivity.class);
                                startActivity(intent);
                                finish();
                            }
