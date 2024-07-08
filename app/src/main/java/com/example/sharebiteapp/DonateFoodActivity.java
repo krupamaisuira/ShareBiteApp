@@ -78,7 +78,7 @@ public class DonateFoodActivity extends MenuBarActivity {
             @Override
             public void onSuccess() {
 
-                Intent intent = new Intent(DonateFoodActivity.this, ProfileActivity.class);
+                Intent intent = new Intent(DonateFoodActivity.this, DonationSuccessActivity.class);
                 startActivity(intent);
                 finish();
             }
