@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-public class DashboardActivity extends MenuBarActivity  {
+public class DashboardActivity extends BottomMenuActivity  {
 
     Button buttondashdonate;
 
@@ -15,8 +15,8 @@ public class DashboardActivity extends MenuBarActivity  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dashboard);
-
+       // setContentView(R.layout.activity_dashboard);
+        getLayoutInflater().inflate(R.layout.activity_dashboard, findViewById(R.id.container));
         buttondashdonate =  findViewById(R.id.btndashdonate);
 
         buttondashdonate.setOnClickListener(new View.OnClickListener() {

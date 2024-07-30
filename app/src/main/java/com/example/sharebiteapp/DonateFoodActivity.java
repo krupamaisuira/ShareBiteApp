@@ -24,7 +24,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseUser;
 
-public class DonateFoodActivity extends MenuBarActivity {
+public class DonateFoodActivity extends BottomMenuActivity {
      Button btndonate;
      EditText txttitle,txtdesc,txtbtbefore,txtprice;
     private SessionManager sessionManager;
@@ -32,8 +32,8 @@ public class DonateFoodActivity extends MenuBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_donate_food);
-
+      //  setContentView(R.layout.activity_donate_food);
+        getLayoutInflater().inflate(R.layout.activity_donate_food, findViewById(R.id.container));
         txttitle = findViewById(R.id.txttitle);
         txtdesc = findViewById(R.id.txtdesc);
         txtbtbefore = findViewById(R.id.txtbtbefore);
