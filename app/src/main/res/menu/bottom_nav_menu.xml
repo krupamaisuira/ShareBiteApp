@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_dashboard"
+        android:icon="@drawable/home"
+        android:title="Dashboard" />
+    <item
+        android:id="@+id/navigation_request"
+        android:icon="@drawable/cutlery_dark"
+        android:title="Food" />
+    <item
+        android:id="@+id/navigation_donate"
+        android:icon="@drawable/food"
+        android:title="Donate" />
+    <item
+        android:id="@+id/navigation_donatedlst"
+        android:icon="@drawable/list_dark"
+        android:title="Donated" />
+    <item
+        android:id="@+id/navigation_profile"
+        android:icon="@drawable/user"
+        android:title="Profile" />
+</menu>

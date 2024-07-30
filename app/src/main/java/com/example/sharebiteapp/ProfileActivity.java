@@ -20,7 +20,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class ProfileActivity extends MenuBarActivity {
+public class ProfileActivity extends BottomMenuActivity {
 
     TextView txtLogout,txtprofileuser,txtchangepwd,txtdelprofile;
     private SessionManager sessionManager;
@@ -30,8 +30,8 @@ public class ProfileActivity extends MenuBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
-
+       // setContentView(R.layout.activity_profile);
+        getLayoutInflater().inflate(R.layout.activity_profile, findViewById(R.id.container));
         txtLogout = findViewById(R.id.txtLogout);
         txtprofileuser = findViewById(R.id.txtprofileusername);
         txtchangepwd = findViewById(R.id.txtchangepwd);
