@@ -1,10 +1,9 @@
 package com.example.sharebiteapp.Utility;
 
 public enum FoodStatus {
-    Pending(0),
-    expired(1),
-    damaged(2),
-    Donated(3);
+    Available(0),
+    Expired(1),
+    Donated(2);
 
     private int index;
 
@@ -22,6 +21,14 @@ public enum FoodStatus {
             }
         }
         throw new IllegalArgumentException("No FoodStatus found with index: " + index);
+    }
+    public static FoodStatus fromString(String statusString) {
+        for (FoodStatus status : FoodStatus.values()) {
+            if (status.name().equalsIgnoreCase(statusString)) {
+                return status;
+            }
+        }
+        throw new IllegalArgumentException("No FoodStatus found with name: " + statusString);
     }
 
 }

@@ -8,9 +8,11 @@ import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import com.example.sharebiteapp.R;
 import com.example.sharebiteapp.SignInActivity;
@@ -68,6 +70,31 @@ public class Utils {
         editor.putBoolean("rememberMe", rememberMe);
         editor.apply();
     }
+    public static void setStatusColor(Context context,FoodStatus status, TextView statusTextView) {
+        int textColor;
+        int backgroundColor;
 
+        switch (status) {
+            case Available:
+                textColor = ContextCompat.getColor(context, R.color.white);
+                backgroundColor = ContextCompat.getColor(context, R.color.holo_blue);
+                break;
+            case expired:
+                textColor = ContextCompat.getColor(context, R.color.red);
+                backgroundColor = ContextCompat.getColor(context, R.color.light_red);
+                break;
+            case Donated:
+                textColor = ContextCompat.getColor(context, R.color.green);
+                backgroundColor = ContextCompat.getColor(context, R.color.light_green);
+                break;
+            default:
+                textColor = ContextCompat.getColor(context, android.R.color.white);
+                backgroundColor = ContextCompat.getColor(context, R.color.holo_blue);
+                break;
+        }
+
+        statusTextView.setTextColor(textColor);
+        statusTextView.setBackgroundColor(backgroundColor);
+    }
 
 }

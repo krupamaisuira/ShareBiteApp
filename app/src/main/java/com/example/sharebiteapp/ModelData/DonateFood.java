@@ -3,6 +3,9 @@ package com.example.sharebiteapp.ModelData;
 import com.example.sharebiteapp.Utility.FoodStatus;
 import com.example.sharebiteapp.Utility.Utils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class DonateFood {
       public String donationId ;
       public String donatedBy ;
@@ -14,6 +17,9 @@ public class DonateFood {
      public String createdon;
      public int status;
 
+
+    public DonateFood() {
+    }
     public DonateFood( String donatedBy, String title, String description, String bestBefore, double price) {
 
 
@@ -23,7 +29,7 @@ public class DonateFood {
         this.bestBefore = bestBefore;
         this.price = price;
         this.fooddeleted = false;
-        this.status = FoodStatus.Pending.getIndex();
+        this.status = FoodStatus.Available.getIndex();
         this.createdon = Utils.getCurrentDatetime();
     }
 
@@ -85,5 +91,19 @@ public class DonateFood {
     public String getFoodStatus()
     {
         return FoodStatus.getByIndex(status).toString();
+    }
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("donationId", donationId);
+        result.put("donatedBy", donatedBy);
+        result.put("title", title);
+        result.put("description", description);
+        result.put("bestBefore", bestBefore);
+        result.put("price", price);
+        result.put("fooddeleted", fooddeleted);
+        result.put("createdon", createdon);
+        result.put("status", status);
+        return result;
     }
 }
