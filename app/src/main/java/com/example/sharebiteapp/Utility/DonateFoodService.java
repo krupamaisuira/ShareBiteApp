@@ -57,7 +57,7 @@ public class DonateFoodService implements IDonateFood {
                 List<DonateFood> donatedFoodList = new ArrayList<>();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     DonateFood food = snapshot.getValue(DonateFood.class);
-                    if (food != null) {
+                    if (food != null && food.fooddeleted == false) {
                         food.setDonationId(snapshot.getKey());
                         donatedFoodList.add(food);
                     }
@@ -71,6 +71,25 @@ public class DonateFoodService implements IDonateFood {
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 if (callback != null) {
                     callback.onFailure(databaseError.getMessage());
+                }
+            }
+        });
+    }
+
+    public void deleteDonatedFood(String uid,OperationCallback callback)
+    {
+        reference.child(_collectionName).child(uid).child("fooddeleted").setValue(true).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                if (callback != null) {
+                    callback.onSuccess();
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (callback != null) {
+                    callback.onFailure(e.getMessage());
                 }
             }
         });
