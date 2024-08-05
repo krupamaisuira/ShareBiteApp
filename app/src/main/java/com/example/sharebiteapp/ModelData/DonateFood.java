@@ -13,14 +13,14 @@ public class DonateFood {
       public String description ;
       public String bestBefore;
       public double price;
-     public Boolean fooddeleted ;
-     public String createdon;
-     public int status;
-
+      public Boolean fooddeleted ;
+      public String createdon;
+      public int status;
+      public  Location location;
 
     public DonateFood() {
     }
-    public DonateFood( String donatedBy, String title, String description, String bestBefore, double price) {
+    public DonateFood( String donatedBy, String title, String description, String bestBefore, double price,Location location) {
 
 
         this.donatedBy = donatedBy;
@@ -31,6 +31,7 @@ public class DonateFood {
         this.fooddeleted = false;
         this.status = FoodStatus.Available.getIndex();
         this.createdon = Utils.getCurrentDatetime();
+        this.location = location;
     }
 
     public String getDonationId() {
@@ -104,6 +105,7 @@ public class DonateFood {
         result.put("fooddeleted", fooddeleted);
         result.put("createdon", createdon);
         result.put("status", status);
+
         return result;
     }
 }
