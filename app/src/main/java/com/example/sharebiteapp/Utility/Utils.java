@@ -79,7 +79,7 @@ public class Utils {
                 textColor = ContextCompat.getColor(context, R.color.white);
                 backgroundColor = ContextCompat.getColor(context, R.color.holo_blue);
                 break;
-            case expired:
+            case Expired:
                 textColor = ContextCompat.getColor(context, R.color.red);
                 backgroundColor = ContextCompat.getColor(context, R.color.light_red);
                 break;

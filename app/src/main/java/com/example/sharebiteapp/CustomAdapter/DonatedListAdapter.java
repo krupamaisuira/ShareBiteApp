@@ -2,6 +2,7 @@ package com.example.sharebiteapp.CustomAdapter;
 
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,12 +23,22 @@ import java.util.List;
 
 public class DonatedListAdapter extends RecyclerView.Adapter<DonatedListAdapter.DonationViewHolder> {
 
-    private List<DonateFood> donationList;
+    public List<DonateFood> donationList;
     private Context context;
+    private OnDeleteClickListener onDeleteClickListener;
+
+    public interface OnDeleteClickListener {
+        void onDeleteClick(int position);
+    }
 
     public DonatedListAdapter(Context context, List<DonateFood> donationList) {
         this.context = context;
         this.donationList = donationList != null ? donationList : new ArrayList<>();
+    }
+    public DonatedListAdapter(Context context, List<DonateFood> donationList, OnDeleteClickListener onDeleteClickListener) {
+        this.context = context;
+        this.donationList = donationList != null ? donationList : new ArrayList<>();
+        this.onDeleteClickListener = onDeleteClickListener;
     }
 
     @NonNull
@@ -45,6 +56,16 @@ public class DonatedListAdapter extends RecyclerView.Adapter<DonatedListAdapter.
         holder.statusTextView.setText(FoodStatus.getByIndex(donateFood.getStatus()).toString());
         FoodStatus status = FoodStatus.fromString(holder.statusTextView.getText().toString());
         Utils.setStatusColor(context,status, holder.statusTextView);
+
+        holder.deleteIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int adapterPosition = holder.getAdapterPosition();
+                if (adapterPosition != RecyclerView.NO_POSITION && onDeleteClickListener != null) {
+                    onDeleteClickListener.onDeleteClick(adapterPosition);
+                }
+            }
+        });
     }
 
     @Override
@@ -65,4 +86,11 @@ public class DonatedListAdapter extends RecyclerView.Adapter<DonatedListAdapter.
             statusTextView = itemView.findViewById(R.id.statusTextView);
         }
     }
+//    public void removeItem(int position) {
+//        if (position >= 0 && position < donationList.size()) {
+//             donationList.remove(position);
+//              notifyDataSetChanged();
+//
+//        }
+//    }
 }
