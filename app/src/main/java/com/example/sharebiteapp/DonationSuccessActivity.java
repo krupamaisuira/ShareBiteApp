@@ -15,14 +15,15 @@ import android.widget.ImageView;
 import java.io.File;
 import java.util.ArrayList;
 
-public class DonationSuccessActivity extends MenuBarActivity {
+public class DonationSuccessActivity extends BottomMenuActivity {
 
     Button btnshare,btndonateanother;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_donation_success);
+       // setContentView(R.layout.activity_donation_success);
+        getLayoutInflater().inflate(R.layout.activity_donation_success, findViewById(R.id.container));
         btnshare = findViewById(R.id.btnshare);
         btndonateanother = findViewById(R.id.btndonateanother);
 

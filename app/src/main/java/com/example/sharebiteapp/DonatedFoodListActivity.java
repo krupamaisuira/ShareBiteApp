@@ -1,5 +1,6 @@
 package com.example.sharebiteapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -20,7 +21,7 @@ import com.example.sharebiteapp.Utility.DonateFoodService;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DonatedFoodListActivity extends BottomMenuActivity  implements DonatedListAdapter.OnDeleteClickListener
+public class DonatedFoodListActivity extends BottomMenuActivity  implements DonatedListAdapter.OnDeleteClickListener,DonatedListAdapter.OnTextClickListener
 {
 
     private RecyclerView recyclerView;
@@ -46,7 +47,7 @@ public class DonatedFoodListActivity extends BottomMenuActivity  implements Dona
             @Override
             public void onSuccess(List<DonateFood> data) {
                 list = new ArrayList<>(data);
-                adapter = new DonatedListAdapter(DonatedFoodListActivity.this, list,DonatedFoodListActivity.this);
+                adapter = new DonatedListAdapter(DonatedFoodListActivity.this, list,DonatedFoodListActivity.this,DonatedFoodListActivity.this);
 
                 RecyclerView.LayoutManager layoutManager = new GridLayoutManager(DonatedFoodListActivity.this, 2);
                 recyclerView.setLayoutManager(layoutManager);
@@ -78,5 +79,12 @@ public class DonatedFoodListActivity extends BottomMenuActivity  implements Dona
                 Toast.makeText(DonatedFoodListActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    public void redirectToDetailPage(int position) {
+        DonateFood donateFood = list.get(position);
+
+        Intent intent = new Intent(DonatedFoodListActivity.this, DonateFoodDetail.class);
+        intent.putExtra("intentdonationId", donateFood.donationId);
+        startActivity(intent);
     }
 }

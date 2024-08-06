@@ -26,19 +26,24 @@ public class DonatedListAdapter extends RecyclerView.Adapter<DonatedListAdapter.
     public List<DonateFood> donationList;
     private Context context;
     private OnDeleteClickListener onDeleteClickListener;
+    private OnTextClickListener onTextClickListener;
 
     public interface OnDeleteClickListener {
         void onDeleteClick(int position);
+    }
+    public interface OnTextClickListener {
+        void redirectToDetailPage(int position);
     }
 
     public DonatedListAdapter(Context context, List<DonateFood> donationList) {
         this.context = context;
         this.donationList = donationList != null ? donationList : new ArrayList<>();
     }
-    public DonatedListAdapter(Context context, List<DonateFood> donationList, OnDeleteClickListener onDeleteClickListener) {
+    public DonatedListAdapter(Context context, List<DonateFood> donationList, OnDeleteClickListener onDeleteClickListener, OnTextClickListener onTextClickListener) {
         this.context = context;
         this.donationList = donationList != null ? donationList : new ArrayList<>();
         this.onDeleteClickListener = onDeleteClickListener;
+        this.onTextClickListener = onTextClickListener;
     }
 
     @NonNull
@@ -63,6 +68,16 @@ public class DonatedListAdapter extends RecyclerView.Adapter<DonatedListAdapter.
                 int adapterPosition = holder.getAdapterPosition();
                 if (adapterPosition != RecyclerView.NO_POSITION && onDeleteClickListener != null) {
                     onDeleteClickListener.onDeleteClick(adapterPosition);
+
+                }
+            }
+        });
+        holder.textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int adapterPosition = holder.getAdapterPosition();
+                if (adapterPosition != RecyclerView.NO_POSITION && onTextClickListener != null) {
+                    onTextClickListener.redirectToDetailPage(adapterPosition);
                 }
             }
         });

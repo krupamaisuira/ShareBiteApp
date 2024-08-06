@@ -23,7 +23,7 @@ import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class ChangePasswordActivity extends MenuBarActivity {
+public class ChangePasswordActivity extends BottomMenuActivity {
     EditText txtcurrentpwd,txtnewpwd,txtnewconfpwd;
     ImageView eye_currentpwd,eye_newpwd,eye_newconfpwd;
     Button btnchangepwd;
@@ -33,8 +33,8 @@ public class ChangePasswordActivity extends MenuBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_change_password);
-
+       // setContentView(R.layout.activity_change_password);
+        getLayoutInflater().inflate(R.layout.activity_change_password, findViewById(R.id.container));
         txtcurrentpwd = findViewById(R.id.txtcurrentpwd);
         txtnewpwd = findViewById(R.id.txtnewpwd);
         txtnewconfpwd = findViewById(R.id.txtnewconfpwd);

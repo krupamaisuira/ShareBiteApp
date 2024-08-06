@@ -1,5 +1,6 @@
     package com.example.sharebiteapp.Utility;
 
+    import android.util.Log;
     import android.widget.Toast;
 
     import androidx.annotation.NonNull;
@@ -7,8 +8,10 @@
     import com.example.sharebiteapp.DonateFoodActivity;
     import com.example.sharebiteapp.Interface.ListOperationCallback;
     import com.example.sharebiteapp.Interface.OperationCallback;
+    import com.example.sharebiteapp.Interface.UserCallback;
     import com.example.sharebiteapp.ModelData.DonateFood;
     import com.example.sharebiteapp.ModelData.Location;
+    import com.example.sharebiteapp.ModelData.User;
     import com.example.sharebiteapp.Utility.Interface.IDonateFood;
     import com.google.android.gms.tasks.OnFailureListener;
     import com.google.android.gms.tasks.OnSuccessListener;
@@ -139,5 +142,52 @@
                 }
             });
         }
+
+        public void getDonationDetail(String uid, ListOperationCallback<DonateFood> callback) {
+            Log.d("d", "getDonationDetail called with uid: " + uid);
+            reference.child(_collectionName).child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Log.d("d", "onDataChange called for uid: " + uid);
+                    DonateFood food = snapshot.getValue(DonateFood.class);
+                    if (food != null) {
+                        food.setDonationId(uid);
+                        Log.d("d", "DonateFood found with donationId: " + food.getDonationId());
+                        locationService.getLocationByDonationId(food.donationId, new ListOperationCallback<Location>() {
+                            @Override
+                            public void onSuccess(Location data) {
+                                Log.d("d", "location data: " + data.address);
+                                food.location = data;
+                                if (callback != null) {
+                                    callback.onSuccess(food);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(String error) {
+                                Log.e("d", "Error fetching location: " + error);
+                                if (callback != null) {
+                                    callback.onFailure(error);
+                                }
+                            }
+                        });
+                    } else {
+                        Log.e("d", "DonateFood not found for donationId: " + uid);
+                        if (callback != null) {
+                            callback.onFailure("DonateFood not found.");
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError e) {
+                    Log.e("d", "DatabaseError: " + e.getMessage());
+                    if (callback != null) {
+                        callback.onFailure(e.getMessage());
+                    }
+                }
+            });
+        }
+
 
     }
