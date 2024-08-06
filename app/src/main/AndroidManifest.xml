@@ -17,6 +17,9 @@
         android:theme="@style/Theme.ShareBiteApp"
         tools:targetApi="31">
         <activity
+            android:name=".RequestFoodListActivity"
+            android:exported="false" />
+        <activity
             android:name=".DonateFoodDetail"
             android:exported="false" />
         <activity

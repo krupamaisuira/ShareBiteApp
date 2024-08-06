@@ -36,6 +36,11 @@ public class BottomMenuActivity extends AppCompatActivity {
                     startActivity(new Intent(BottomMenuActivity.this, DonateFoodActivity.class));
                     return true;
                 }
+                else if(R.id.navigation_request == item.getItemId())
+                {
+                    startActivity(new Intent(BottomMenuActivity.this, RequestFoodListActivity.class));
+                    return true;
+                }
                 else if(R.id.navigation_donatedlst == item.getItemId())
                 {
                     startActivity(new Intent(BottomMenuActivity.this, DonatedFoodListActivity.class));
