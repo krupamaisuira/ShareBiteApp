@@ -77,14 +77,17 @@
                 }
             });
         }
-        public void getAllDonatedFood(final ListOperationCallback<List<DonateFood>> callback) {
+        public void getAllDonatedFood(String userId,final ListOperationCallback<List<DonateFood>> callback) {
             reference.child(_collectionName).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     List<DonateFood> donatedFoodList = new ArrayList<>();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         DonateFood food = snapshot.getValue(DonateFood.class);
-                        if (food != null && food.fooddeleted == false) {
+                        Log.d("donate food service","user id  " + userId);
+                        Log.d("donate food service","donation by id  " + food.getDonatedBy());
+                        if (food != null && food.fooddeleted == false  && userId.equals(food.getDonatedBy())) {
+                            Log.d("donate food service","inside food list  " + food.getDonatedBy());
                             food.setDonationId(snapshot.getKey());
                             donatedFoodList.add(food);
                         }
@@ -190,14 +193,14 @@
         }
 
 // region request food
-public void getAllRequestFoodList(final ListOperationCallback<List<DonateFood>> callback) {
+public void getAllRequestFoodList(String userId,final ListOperationCallback<List<DonateFood>> callback) {
     reference.child(_collectionName).addValueEventListener(new ValueEventListener() {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
             List<DonateFood> donatedFoodList = new ArrayList<>();
             for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                 DonateFood food = snapshot.getValue(DonateFood.class);
-                if (food != null && food.fooddeleted == false && food.status == FoodStatus.Available.getIndex()) {
+                if (food != null && food.fooddeleted == false && food.status == FoodStatus.Available.getIndex() && !userId.equals(food.getDonatedBy())) {
                     food.setDonationId(snapshot.getKey());
                     donatedFoodList.add(food);
                 }
