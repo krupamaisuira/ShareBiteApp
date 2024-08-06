@@ -1,8 +1,13 @@
 package com.example.sharebiteapp.Utility;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
+import com.example.sharebiteapp.Interface.ListOperationCallback;
 import com.example.sharebiteapp.Interface.OperationCallback;
+import com.example.sharebiteapp.Interface.UserCallback;
+import com.example.sharebiteapp.ModelData.DonateFood;
 import com.example.sharebiteapp.ModelData.Location;
 import com.example.sharebiteapp.Utility.Interface.ILocation;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -83,5 +88,39 @@ public class LocationService implements ILocation {
                     }
                 });
     }
+    public void getLocationByDonationId(String uid, ListOperationCallback callback) {
+        Log.d("location service", "donation id " + uid);
+        reference.child(_collectionName).orderByChild("donationId")
+                .equalTo(uid).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        Log.d("location service", "enter in data change");
+
+                        if (snapshot.exists()) {
+                            for (DataSnapshot childSnapshot : snapshot.getChildren()) {
+                                Location location = childSnapshot.getValue(Location.class);
+                                if (location != null) {
+                                    Log.d("location service", "location donate id: " + location.getDonationId());
+                                    callback.onSuccess(location);
+                                    return;
+                                } else {
+                                    Log.d("location service", "location is null");
+                                }
+                            }
+                        } else {
+                            Log.d("location service", "snapshot does not exist");
+                        }
+                        callback.onFailure("Location not found");
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError e) {
+                        if (callback != null) {
+                            callback.onFailure(e.getMessage());
+                        }
+                    }
+                });
+    }
+
 
 }
