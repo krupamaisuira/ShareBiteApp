@@ -17,6 +17,7 @@ import com.example.sharebiteapp.CustomAdapter.RequestFoodListAdapter;
 import com.example.sharebiteapp.Interface.ListOperationCallback;
 import com.example.sharebiteapp.ModelData.DonateFood;
 import com.example.sharebiteapp.Utility.DonateFoodService;
+import com.example.sharebiteapp.Utility.SessionManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,8 @@ public class RequestFoodListActivity extends BottomMenuActivity implements Reque
     private RequestFoodListAdapter adapter;
     DonateFoodService donatefoodservice;
     List<DonateFood> list ;
+    private SessionManager sessionManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,11 +39,12 @@ public class RequestFoodListActivity extends BottomMenuActivity implements Reque
         recyclerView = findViewById(R.id.reqrecyclerView);
         donatefoodservice = new DonateFoodService();
         list = new ArrayList<>();
+        sessionManager = SessionManager.getInstance(this);
         setAdapterFoodList();
     }
     public void setAdapterFoodList()
     {
-        donatefoodservice.getAllRequestFoodList(new ListOperationCallback<List<DonateFood>>() {
+        donatefoodservice.getAllRequestFoodList(sessionManager.getUserID(),new ListOperationCallback<List<DonateFood>>() {
             @Override
             public void onSuccess(List<DonateFood> data) {
                 list = new ArrayList<>(data);

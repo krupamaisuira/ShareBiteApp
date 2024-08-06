@@ -11,9 +11,9 @@ import java.util.List;
 public interface IDonateFood {
     void donatefood(DonateFood food, OperationCallback callback);
     void addLocationForDonatedFood(String donationid, Location location, OperationCallback callback);
-    void getAllDonatedFood(final ListOperationCallback<List<DonateFood>> callback);
+    void getAllDonatedFood(String userId,final ListOperationCallback<List<DonateFood>> callback);
     void deleteDonatedFood(String uid,OperationCallback callback);
     void deleteLocation(String donationid, OperationCallback callback);
     void getDonationDetail(String uid, ListOperationCallback<DonateFood> callback);
-    void getAllRequestFoodList(final ListOperationCallback<List<DonateFood>> callback);
+    void getAllRequestFoodList(String userId,final ListOperationCallback<List<DonateFood>> callback);
 }
