@@ -17,6 +17,12 @@
         android:theme="@style/Theme.ShareBiteApp"
         tools:targetApi="31">
         <activity
+            android:name=".RequestFoodSuccessActivity"
+            android:exported="false" />
+        <activity
+            android:name=".RequestFoodDetailActivity"
+            android:exported="false" />
+        <activity
             android:name=".RequestFoodListActivity"
             android:exported="false" />
         <activity

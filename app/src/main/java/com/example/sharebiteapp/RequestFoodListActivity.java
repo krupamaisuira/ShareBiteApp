@@ -63,7 +63,7 @@ public class RequestFoodListActivity extends BottomMenuActivity implements Reque
     public void onCartClick(int position) {
         DonateFood donateFood = list.get(position);
 
-        Intent intent = new Intent(RequestFoodListActivity.this, DonateFoodDetail.class);
+        Intent intent = new Intent(RequestFoodListActivity.this, RequestFoodDetailActivity.class);
         intent.putExtra("intentdonationId", donateFood.donationId);
         startActivity(intent);
     }
