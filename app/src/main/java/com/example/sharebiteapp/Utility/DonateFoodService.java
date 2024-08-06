@@ -57,7 +57,7 @@
                         }
                     });
         }
-        private void addLocationForDonatedFood(String donationid, Location location, OperationCallback callback) {
+        public void addLocationForDonatedFood(String donationid, Location location, OperationCallback callback) {
             Location selectedadd = new Location(donationid,location.getAddress(),location.getLatitude(),location.getLongitude());
             locationService.addlocation(selectedadd, new OperationCallback() {
                 @Override
@@ -122,7 +122,7 @@
                 }
             });
         }
-        private void deleteLocation(String donationid, OperationCallback callback) {
+        public void deleteLocation(String donationid, OperationCallback callback) {
 
             locationService.deleteLocationByDonationID(donationid, new OperationCallback() {
                 @Override
