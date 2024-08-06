@@ -189,5 +189,35 @@
             });
         }
 
+// region request food
+public void getAllRequestFoodList(final ListOperationCallback<List<DonateFood>> callback) {
+    reference.child(_collectionName).addValueEventListener(new ValueEventListener() {
+        @Override
+        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            List<DonateFood> donatedFoodList = new ArrayList<>();
+            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                DonateFood food = snapshot.getValue(DonateFood.class);
+                if (food != null && food.fooddeleted == false && food.status == FoodStatus.Available.getIndex()) {
+                    food.setDonationId(snapshot.getKey());
+                    donatedFoodList.add(food);
+                }
+            }
+            if (callback != null) {
+                callback.onSuccess(donatedFoodList);
+            }
+        }
+
+        @Override
+        public void onCancelled(@NonNull DatabaseError databaseError) {
+            if (callback != null) {
+                callback.onFailure(databaseError.getMessage());
+            }
+        }
+    });
+}
+
+
+// endregion
+
 
     }
