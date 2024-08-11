@@ -31,7 +31,7 @@ public class LocationService implements ILocation {
     @Override
     public void addlocation(Location model, OperationCallback callback) {
         String newItemKey = reference.child(_collectionName).push().getKey();
-
+        model.setDonationId(newItemKey);
         reference.child(_collectionName).child(newItemKey).setValue(model)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override

@@ -30,43 +30,101 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <ImageView
+        <FrameLayout
             android:layout_width="0dp"
             android:layout_height="100dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            android:background="@android:drawable/ic_menu_gallery"
-            android:scaleType="centerInside" />
+            android:layout_weight="1">
 
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            android:background="@android:drawable/ic_menu_gallery"
-            android:scaleType="centerInside" />
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            android:background="@android:drawable/ic_menu_gallery"
-            android:scaleType="centerInside" />
-        <ImageView
-            android:layout_width="0dp"
-            android:layout_height="100dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            android:background="@android:drawable/ic_menu_gallery"
-            android:scaleType="centerInside" />
+            <ImageView
+                android:id="@+id/imgview"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:scaleType="centerInside" />
 
+            <ImageButton
+                android:id="@+id/btnClose1"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="end|top"
+                android:background="@android:color/transparent"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/imgview2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:scaleType="centerInside" />
+
+            <ImageButton
+                android:id="@+id/btnClose2"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="end|top"
+                android:background="@android:color/transparent"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/imgview3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:scaleType="centerInside" />
+
+            <ImageButton
+                android:id="@+id/btnClose3"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="end|top"
+                android:background="@android:color/transparent"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_weight="1">
+
+            <ImageView
+                android:id="@+id/imgview4"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:scaleType="centerInside" />
+
+            <ImageButton
+                android:id="@+id/btnClose4"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="end|top"
+                android:background="@android:color/transparent"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:visibility="gone" />
+        </FrameLayout>
         <ImageButton
+            android:id="@+id/imgcapture"
             android:layout_width="40dp"
             android:layout_height="40dp"
-
             android:background="@android:drawable/ic_menu_add"
             android:scaleType="centerInside"
             android:layout_gravity="center"/>
+
     </LinearLayout>
 
 

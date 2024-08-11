@@ -9,7 +9,7 @@ public class Location {
     public String address;
     public double latitude;
     public double longitude;
-    public Boolean locationdeleted ;
+
     public String createdon;
     public Location() {
     }
@@ -19,7 +19,7 @@ public class Location {
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.locationdeleted = false;
+
         this.createdon = Utils.getCurrentDatetime();
     }
 
