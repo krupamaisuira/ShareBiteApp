@@ -1,5 +1,7 @@
 package com.example.sharebiteapp.ModelData;
 
+import android.net.Uri;
+
 import com.example.sharebiteapp.Utility.FoodStatus;
 import com.example.sharebiteapp.Utility.Utils;
 
@@ -17,10 +19,11 @@ public class DonateFood {
       public String createdon;
       public int status;
       public  Location location;
+      public   Uri[] imageUris;
 
     public DonateFood() {
     }
-    public DonateFood( String donatedBy, String title, String description, String bestBefore, double price,Location location) {
+    public DonateFood( String donatedBy, String title, String description, String bestBefore, double price,Location location,Uri[] imageUris) {
 
 
         this.donatedBy = donatedBy;
@@ -32,6 +35,7 @@ public class DonateFood {
         this.status = FoodStatus.Available.getIndex();
         this.createdon = Utils.getCurrentDatetime();
         this.location = location;
+        this.imageUris = imageUris;
     }
 
     public String getDonationId() {

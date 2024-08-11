@@ -1,5 +1,6 @@
     package com.example.sharebiteapp.Utility;
 
+    import android.net.Uri;
     import android.util.Log;
     import android.widget.Toast;
 
@@ -11,6 +12,7 @@
     import com.example.sharebiteapp.Interface.UserCallback;
     import com.example.sharebiteapp.ModelData.DonateFood;
     import com.example.sharebiteapp.ModelData.Location;
+    import com.example.sharebiteapp.ModelData.Photos;
     import com.example.sharebiteapp.ModelData.User;
     import com.example.sharebiteapp.Utility.Interface.IDonateFood;
     import com.google.android.gms.tasks.OnFailureListener;
@@ -20,30 +22,38 @@
     import com.google.firebase.database.DatabaseReference;
     import com.google.firebase.database.FirebaseDatabase;
     import com.google.firebase.database.ValueEventListener;
+    import com.google.firebase.storage.FirebaseStorage;
+    import com.google.firebase.storage.StorageReference;
 
     import java.util.ArrayList;
     import java.util.List;
+    import java.util.UUID;
 
     public class DonateFoodService implements IDonateFood {
         private DatabaseReference reference;
         private static String _collectionName = "donatefood";
         private LocationService locationService;
-
+        private PhotoService photoService;
+        private StorageReference storageReference;
         public DonateFoodService() {
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             reference = database.getReference();
             locationService = new LocationService();
+            photoService = new PhotoService();
+            storageReference = FirebaseStorage.getInstance().getReference();
         }
         @Override
         public void donatefood(DonateFood food, OperationCallback callback) {
             String newItemKey = reference.child(_collectionName).push().getKey();
-
+                food.setDonationId(newItemKey);
                    reference.child(_collectionName).child(newItemKey).setValue(food.toMap())
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
                             if (callback != null) {
                                 addLocationForDonatedFood(newItemKey, food.location, callback);
+                                uploadImages(newItemKey,food.imageUris,callback);
+
                                 callback.onSuccess();
                             }
 
@@ -221,6 +231,36 @@ public void getAllRequestFoodList(String userId,final ListOperationCallback<List
 
 
 // endregion
+private void uploadImages(String donationId, Uri[] imageUris,OperationCallback callback) {
+    for (int i = 0; i < imageUris.length; i++) {
+
+        Uri imageUri = imageUris[i];
+        StorageReference fileReference = storageReference.child("foodimages/" + donationId + "/" + UUID.randomUUID().toString());
+
+        fileReference.putFile(imageUri).addOnSuccessListener(taskSnapshot -> fileReference.getDownloadUrl().addOnSuccessListener(downloadUrl -> {
+            Photos photos = new Photos(donationId,downloadUrl.toString());
+            photoService.addFoodPhotos(photos, new OperationCallback() {
+                @Override
+                public void onSuccess() {
+                    // Handle success scenario, possibly update food record with locationId
+                    if (callback != null) {
+                        callback.onSuccess();
+                    }
+                }
+
+                @Override
+                public void onFailure(String error) {
+                    // Handle failure scenario
+                    if (callback != null) {
+                        callback.onFailure(error);
+                    }
+                }
+            });
+        })).addOnFailureListener(e -> {
+
+        });
+    }
+}
 
 
     }
