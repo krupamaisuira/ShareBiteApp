@@ -33,7 +33,9 @@ import com.example.sharebiteapp.ModelData.CustomPrediction;
 import com.example.sharebiteapp.ModelData.DonateFood;
 import com.example.sharebiteapp.ModelData.Location;
 import com.example.sharebiteapp.Utility.DonateFoodService;
+import com.example.sharebiteapp.Utility.LocationUtils;
 import com.example.sharebiteapp.Utility.SessionManager;
+import com.example.sharebiteapp.Utility.Utils;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
@@ -52,23 +54,20 @@ import android.Manifest;
 public class DonateFoodActivity extends BottomMenuActivity {
     TextView txtselectedAddress;
     Button btndonate;
-    EditText txttitle,txtdesc,txtbtbefore,txtprice,locationInput;
+    EditText txttitle,txtdesc,txtbtbefore,txtprice;
     private SessionManager sessionManager;
     DonateFoodService donatefoodservice;
-    ImageView iconAddLocation,imgview;
-    private PlacesClient placesClient;
-    private RecyclerView placesList;
+    ImageView iconAddLocation;
+
     private static final int PICK_IMAGE = 1;
     private ImageView[] imageViews;
     private ImageButton imgCapture;
     private ImageButton[] closeButtons;
     private int imageCount = 0;
 
-    private AutocompletePredictionAdapter adapter;
-    private List<CustomPrediction> predictions = new ArrayList<>();
-    private CustomPrediction selectedLocation;
-    Location location;
 
+    Location location;
+    LocationUtils locationUtils;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -98,6 +97,7 @@ public class DonateFoodActivity extends BottomMenuActivity {
         };
         donatefoodservice = new DonateFoodService();
         location = new Location();
+        locationUtils = new LocationUtils(this);
         sessionManager = SessionManager.getInstance(this);
 
         for (int i = 0; i < imageViews.length; i++) {
@@ -137,7 +137,7 @@ public class DonateFoodActivity extends BottomMenuActivity {
         iconAddLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showAddLocationPopup(v);
+                locationUtils.showAddLocationPopup(v,txtselectedAddress,"Add Address");
             }
         });
 
@@ -150,10 +150,7 @@ public class DonateFoodActivity extends BottomMenuActivity {
             }
         });
 
-        if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), "AIzaSyDHWW-ftVRQBiatCrTFs3dLb4VxWAQGiJk");
-        }
-        placesClient = Places.createClient(this);
+
     }
 //    private Uri[] getImageUrisFromImageViews() {
 //        Uri[] uris = new Uri[imageViews.length];
@@ -166,25 +163,7 @@ public class DonateFoodActivity extends BottomMenuActivity {
 //
 //        return uris;
 //    }
-private Uri[] getImageUrisFromImageViews() {
-    List<Uri> uriList = new ArrayList<>();
 
-    for (ImageView imageView : imageViews) {
-        Object tag = imageView.getTag();
-        if (tag instanceof Uri) {
-            Uri uri = (Uri) tag;
-            uriList.add(uri);
-            Log.d("DonateFoodActivity", "Retrieved URI: " + uri.toString());
-        } else {
-            Log.w("DonateFoodActivity", "Tag is not a URI: " + tag);
-        }
-    }
-
-    // Convert List to Array
-    Uri[] uris = uriList.toArray(new Uri[0]);
-
-    return uris;
-}
 
     public void addDonateFood()
     {
@@ -192,6 +171,23 @@ private Uri[] getImageUrisFromImageViews() {
         String desc = txtdesc.getText().toString().trim();
         String bestbefore = txtbtbefore.getText().toString().trim();
         String price = txtprice.getText().toString();
+
+
+        Uri[] imageUris = Utils.getImageUrisFromImageViews(imageViews);
+
+
+        if(imageUris.length == 0)
+        {
+            Toast.makeText(this, "Please select image", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        updateLocationFromSelected();
+
+        if (location.getAddress() == null) {
+            Toast.makeText(this, "Please add address", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         if (TextUtils.isEmpty(title)) {
             txttitle.setError("Title is required");
@@ -204,23 +200,11 @@ private Uri[] getImageUrisFromImageViews() {
             txtdesc.requestFocus();
             return ;
         }
-        if (selectedLocation == null) {
-            Toast.makeText(this, "Please add address", Toast.LENGTH_SHORT).show();
-            return;
-        }
+
         if (TextUtils.isEmpty(price)) {
             price = "0";
         }
 
-        // set imageuri here
-        Uri[] imageUris = getImageUrisFromImageViews();
-
-
-        if(imageUris.length == 0)
-        {
-            Toast.makeText(this, "Please select image", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
 
         DonateFood food = new DonateFood(sessionManager.getUserID(),title,desc,bestbefore,Double.parseDouble(price),location,imageUris);
@@ -240,105 +224,15 @@ private Uri[] getImageUrisFromImageViews() {
 
     }
 
-    private void fetchPlaceDetails(CustomPrediction customPrediction) {
-        FetchPlaceRequest request = FetchPlaceRequest.builder(customPrediction.getPlaceId(), Arrays.asList(Place.Field.ADDRESS,Place.Field.LAT_LNG)).build();
-
-        placesClient.fetchPlace(request).addOnSuccessListener(response -> {
-            Place place = response.getPlace();
-            LatLng latLng = place.getLatLng();
-            if (latLng != null) {
-                double latitude = latLng.latitude;
-                double longitude = latLng.longitude;
-                customPrediction.setFullAddress(place.getAddress());
-                customPrediction.setLatitude(latitude);
-                customPrediction.setLongitude(longitude);
-                adapter.notifyDataSetChanged();
-
-            }
-
-
-        }).addOnFailureListener(exception -> {
-            // Handle the error
-        });
-    }
-    private void showAddLocationPopup(View view) {
-        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.popup_add_location, null);
-
-        int width = ViewGroup.LayoutParams.MATCH_PARENT;
-        int height = ViewGroup.LayoutParams.MATCH_PARENT;
-        boolean focusable = true;
-        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
-
-        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
-
-        ImageView btnClose = popupView.findViewById(R.id.btn_close);
-        btnClose.setOnClickListener(v -> popupWindow.dismiss());
-
-        locationInput = popupView.findViewById(R.id.location_input);
-        placesList = popupView.findViewById(R.id.places_list);
-
-        // Set up RecyclerView
-        placesList.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new AutocompletePredictionAdapter(predictions, this, prediction -> {
-            locationInput.setText(prediction.getFullAddress());
-            selectedLocation = prediction;
-        });
-        placesList.setAdapter(adapter);
-
-        locationInput.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (s.length() > 2) {
-                    fetchAutocompletePredictions(s.toString());
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });
-
-        Button btnSave = popupView.findViewById(R.id.btn_add_location);
-        btnSave.setOnClickListener(v -> {
-
-            if (selectedLocation == null) {
-                Toast.makeText(this, "No place selected", Toast.LENGTH_SHORT).show();
-                txtselectedAddress.setText("Add Address");
-                return;
-            }
-            else
-            {
-                location.setAddress(selectedLocation.getFullAddress());
-                location.setLatitude(selectedLocation.getLatitude());
-                location.setLongitude(selectedLocation.getLongitude());
-                txtselectedAddress.setText(location.getAddress());
-                popupWindow.dismiss();
-            }
-        });
+    private void updateLocationFromSelected() {
+        CustomPrediction selectedLocation = locationUtils.getSelectedLocation();
+        if (selectedLocation != null) {
+            location.setAddress(selectedLocation.getFullAddress());
+            location.setLatitude(selectedLocation.getLatitude());
+            location.setLongitude(selectedLocation.getLongitude());
+        }
     }
 
-    private void fetchAutocompletePredictions(String query) {
-        FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
-                .setQuery(query)
-                .build();
-
-        placesClient.findAutocompletePredictions(request).addOnSuccessListener(response -> {
-            predictions.clear();
-            for (AutocompletePrediction prediction : response.getAutocompletePredictions()) {
-                CustomPrediction customPrediction = new CustomPrediction(prediction.getPlaceId(), prediction.getPrimaryText(null).toString());
-                predictions.add(customPrediction); // Add to predictions list
-                fetchPlaceDetails(customPrediction); // Fetch place details
-            }
-
-
-        }).addOnFailureListener(exception -> {
-            Toast.makeText(DonateFoodActivity.this, "Error fetching predictions", Toast.LENGTH_SHORT).show();
-
-        });
-    }
     // region open gallery
 //        private void openGallery() {
 //            Intent intent = new Intent(Intent.ACTION_PICK);

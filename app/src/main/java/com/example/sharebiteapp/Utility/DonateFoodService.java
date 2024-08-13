@@ -52,7 +52,7 @@
                         public void onSuccess(Void aVoid) {
                             if (callback != null) {
                                 addLocationForDonatedFood(newItemKey, food.location, callback);
-                                uploadImages(newItemKey,food.imageUris,callback);
+                                photoService.uploadImages(newItemKey,food.imageUris,callback);
 
                                 callback.onSuccess();
                             }
@@ -157,28 +157,51 @@
         }
 
         public void getDonationDetail(String uid, ListOperationCallback<DonateFood> callback) {
-            Log.d("d", "getDonationDetail called with uid: " + uid);
+
             reference.child(_collectionName).child(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Log.d("d", "onDataChange called for uid: " + uid);
+
                     DonateFood food = snapshot.getValue(DonateFood.class);
+
                     if (food != null) {
                         food.setDonationId(uid);
+
                         Log.d("d", "DonateFood found with donationId: " + food.getDonationId());
-                        locationService.getLocationByDonationId(food.donationId, new ListOperationCallback<Location>() {
+
+                        // Fetch photos asynchronously
+                        getAllPhotos(food.getDonationId(), new ListOperationCallback<List<Uri>>() {
                             @Override
-                            public void onSuccess(Location data) {
-                                Log.d("d", "location data: " + data.address);
-                                food.location = data;
-                                if (callback != null) {
-                                    callback.onSuccess(food);
-                                }
+                            public void onSuccess(List<Uri> imageUris) {
+                                Log.d("d", "photo data: " + imageUris.size());
+                                food.setUploadedImageUris(imageUris);
+
+                                // Fetch location asynchronously
+                                locationService.getLocationByDonationId(food.getDonationId(), new ListOperationCallback<Location>() {
+                                    @Override
+                                    public void onSuccess(Location data) {
+                                        Log.d("d", "location data: " + data.address);
+                                        food.location = data;
+
+                                        // All data is populated, return the final DonateFood object
+                                        if (callback != null) {
+                                            callback.onSuccess(food);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onFailure(String error) {
+                                        Log.e("d", "Error fetching location: " + error);
+                                        if (callback != null) {
+                                            callback.onFailure(error);
+                                        }
+                                    }
+                                });
                             }
 
                             @Override
                             public void onFailure(String error) {
-                                Log.e("d", "Error fetching location: " + error);
+                                Log.e("d", "Error fetching photos: " + error);
                                 if (callback != null) {
                                     callback.onFailure(error);
                                 }
@@ -202,7 +225,8 @@
             });
         }
 
-// region request food
+
+        // region request food
 public void getAllRequestFoodList(String userId,final ListOperationCallback<List<DonateFood>> callback) {
     reference.child(_collectionName).addValueEventListener(new ValueEventListener() {
         @Override
@@ -231,36 +255,50 @@ public void getAllRequestFoodList(String userId,final ListOperationCallback<List
 
 
 // endregion
-private void uploadImages(String donationId, Uri[] imageUris,OperationCallback callback) {
-    for (int i = 0; i < imageUris.length; i++) {
 
-        Uri imageUri = imageUris[i];
-        StorageReference fileReference = storageReference.child("foodimages/" + donationId + "/" + UUID.randomUUID().toString());
+private void getAllPhotos(String donationId,ListOperationCallback<List<Uri>> callback)
+{
+    photoService.getAllPhotosByDonationId(donationId, new ListOperationCallback<List<Uri>>() {
+        @Override
+        public void onSuccess(List<Uri> imageUri) {
+            Log.d("d", "phot data: " + imageUri.size());
 
-        fileReference.putFile(imageUri).addOnSuccessListener(taskSnapshot -> fileReference.getDownloadUrl().addOnSuccessListener(downloadUrl -> {
-            Photos photos = new Photos(donationId,downloadUrl.toString());
-            photoService.addFoodPhotos(photos, new OperationCallback() {
-                @Override
-                public void onSuccess() {
-                    // Handle success scenario, possibly update food record with locationId
-                    if (callback != null) {
-                        callback.onSuccess();
-                    }
-                }
+            if (callback != null) {
+                callback.onSuccess(imageUri);
+            }
+        }
 
-                @Override
-                public void onFailure(String error) {
-                    // Handle failure scenario
-                    if (callback != null) {
-                        callback.onFailure(error);
-                    }
-                }
-            });
-        })).addOnFailureListener(e -> {
+        @Override
+        public void onFailure(String error) {
+            Log.e("d", "Error fetching data: " + error);
+            if (callback != null) {
+                callback.onFailure(error);
+            }
+        }
+    });
 
-        });
-    }
+
 }
+        @Override
+        public void updatedonatedfood(DonateFood food, OperationCallback callback) {
+            food.setUpdatedon(Utils.getCurrentDatetime());
+            reference.child(_collectionName).child(food.donationId).updateChildren(food.toMap())
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            if (callback != null) {
+                                callback.onSuccess();
+                            }
 
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            if (callback != null) {
+                                callback.onFailure(e.getMessage());
+                            }
+                        }
+                    });
+        }
 
     }

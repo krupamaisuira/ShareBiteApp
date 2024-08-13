@@ -31,7 +31,7 @@ public class LocationService implements ILocation {
     @Override
     public void addlocation(Location model, OperationCallback callback) {
         String newItemKey = reference.child(_collectionName).push().getKey();
-        model.setDonationId(newItemKey);
+        model.setLocationId(newItemKey);
         reference.child(_collectionName).child(newItemKey).setValue(model)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -89,18 +89,16 @@ public class LocationService implements ILocation {
                 });
     }
     public void getLocationByDonationId(String uid, ListOperationCallback callback) {
-        Log.d("location service", "donation id " + uid);
+
         reference.child(_collectionName).orderByChild("donationId")
                 .equalTo(uid).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        Log.d("location service", "enter in data change");
-
                         if (snapshot.exists()) {
                             for (DataSnapshot childSnapshot : snapshot.getChildren()) {
                                 Location location = childSnapshot.getValue(Location.class);
                                 if (location != null) {
-                                    Log.d("location service", "location donate id: " + location.getDonationId());
+
                                     callback.onSuccess(location);
                                     return;
                                 } else {
@@ -115,6 +113,27 @@ public class LocationService implements ILocation {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError e) {
+                        if (callback != null) {
+                            callback.onFailure(e.getMessage());
+                        }
+                    }
+                });
+    }
+    @Override
+    public void updatelocation(Location model, OperationCallback callback){
+        model.setUpdatedon(Utils.getCurrentDatetime());
+        reference.child(_collectionName).child(model.locationId).updateChildren(model.toMapUpdate())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        if (callback != null) {
+                            callback.onSuccess();
+                        }
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
                         if (callback != null) {
                             callback.onFailure(e.getMessage());
                         }

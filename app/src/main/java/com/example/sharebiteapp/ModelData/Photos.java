@@ -2,18 +2,19 @@ package com.example.sharebiteapp.ModelData;
 
 
 
-public class Photos {
-    private String photoId;
-    private String donationId;
-    private String imagePath;
+    public class Photos {
+        private String photoId;
+        private String donationId;
+        private String imagePath;
+        private int order;
+        public Photos() {}
 
-    public Photos() {}
+        public Photos(String donationId, String imagePath,int order) {
 
-    public Photos(String donationId, String imagePath) {
-
-        this.donationId = donationId;
-        this.imagePath = imagePath;
-    }
+            this.donationId = donationId;
+            this.imagePath = imagePath;
+            this.order = order;
+        }
 
     public String getPhotoId() {
         return photoId;
@@ -38,5 +39,13 @@ public class Photos {
     public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
     }
-}
+
+        public int getOrder() {
+            return order;
+        }
+
+        public void setOrder(int order) {
+            this.order = order;
+        }
+    }
 

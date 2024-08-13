@@ -16,4 +16,5 @@ public interface IDonateFood {
     void deleteLocation(String donationid, OperationCallback callback);
     void getDonationDetail(String uid, ListOperationCallback<DonateFood> callback);
     void getAllRequestFoodList(String userId,final ListOperationCallback<List<DonateFood>> callback);
+    void updatedonatedfood(DonateFood food, OperationCallback callback);
 }
