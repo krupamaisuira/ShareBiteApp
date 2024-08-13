@@ -26,10 +26,14 @@ public class DonatedListAdapter extends RecyclerView.Adapter<DonatedListAdapter.
     public List<DonateFood> donationList;
     private Context context;
     private OnDeleteClickListener onDeleteClickListener;
+    private OnEditClickListener onEditClickListener;
     private OnTextClickListener onTextClickListener;
 
     public interface OnDeleteClickListener {
         void onDeleteClick(int position);
+    }
+    public interface OnEditClickListener {
+        void editDonateFood(int position);
     }
     public interface OnTextClickListener {
         void redirectToDetailPage(int position);
@@ -39,11 +43,12 @@ public class DonatedListAdapter extends RecyclerView.Adapter<DonatedListAdapter.
         this.context = context;
         this.donationList = donationList != null ? donationList : new ArrayList<>();
     }
-    public DonatedListAdapter(Context context, List<DonateFood> donationList, OnDeleteClickListener onDeleteClickListener, OnTextClickListener onTextClickListener) {
+    public DonatedListAdapter(Context context, List<DonateFood> donationList, OnDeleteClickListener onDeleteClickListener, OnTextClickListener onTextClickListener,OnEditClickListener onEditClickListener) {
         this.context = context;
         this.donationList = donationList != null ? donationList : new ArrayList<>();
         this.onDeleteClickListener = onDeleteClickListener;
         this.onTextClickListener = onTextClickListener;
+        this.onEditClickListener = onEditClickListener;
     }
 
     @NonNull
@@ -72,6 +77,15 @@ public class DonatedListAdapter extends RecyclerView.Adapter<DonatedListAdapter.
                 }
             }
         });
+        holder.editIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int adapterPosition = holder.getAdapterPosition();
+                if (adapterPosition != RecyclerView.NO_POSITION && onTextClickListener != null) {
+                    onEditClickListener.editDonateFood(adapterPosition);
+                }
+            }
+        });
         holder.textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,7 +104,7 @@ public class DonatedListAdapter extends RecyclerView.Adapter<DonatedListAdapter.
 
     public static class DonationViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView imageView, deleteIcon;
+        ImageView imageView, deleteIcon,editIcon;
         TextView textView,statusTextView;
 
         public DonationViewHolder(@NonNull View itemView) {
@@ -99,6 +113,7 @@ public class DonatedListAdapter extends RecyclerView.Adapter<DonatedListAdapter.
             deleteIcon = itemView.findViewById(R.id.deleteIcon);
             textView = itemView.findViewById(R.id.textView);
             statusTextView = itemView.findViewById(R.id.statusTextView);
+            editIcon = itemView.findViewById(R.id.editIcon);
         }
     }
 //    public void removeItem(int position) {

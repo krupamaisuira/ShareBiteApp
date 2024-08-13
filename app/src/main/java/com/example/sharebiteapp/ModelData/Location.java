@@ -3,6 +3,9 @@ package com.example.sharebiteapp.ModelData;
 import com.example.sharebiteapp.Utility.FoodStatus;
 import com.example.sharebiteapp.Utility.Utils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Location {
     public String locationId;
     public String donationId;
@@ -11,6 +14,7 @@ public class Location {
     public double longitude;
 
     public String createdon;
+    public String updatedon;
     public Location() {
     }
 
@@ -61,5 +65,18 @@ public class Location {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+
+    public void setUpdatedon(String updatedon) {
+        this.updatedon = updatedon;
+    }
+    public Map<String, Object> toMapUpdate() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("address", address);
+        result.put("longitude", longitude);
+        result.put("latitude", latitude);
+        result.put("updatedon", updatedon);
+
+        return result;
     }
 }

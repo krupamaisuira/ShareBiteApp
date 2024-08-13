@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,7 +18,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class Utils {
@@ -87,6 +90,25 @@ public class Utils {
 
         statusTextView.setTextColor(textColor);
         statusTextView.setBackgroundColor(backgroundColor);
+    }
+    public static Uri[] getImageUrisFromImageViews(ImageView[] imageViews) {
+        List<Uri> uriList = new ArrayList<>();
+
+        for (ImageView imageView : imageViews) {
+            Object tag = imageView.getTag();
+            if (tag instanceof Uri) {
+                Uri uri = (Uri) tag;
+                uriList.add(uri);
+                Log.d("DonateFoodActivity", "Retrieved URI: " + uri.toString());
+            } else {
+                Log.w("DonateFoodActivity", "Tag is not a URI: " + tag);
+            }
+        }
+
+        // Convert List to Array
+        Uri[] uris = uriList.toArray(new Uri[0]);
+
+        return uris;
     }
 
 }

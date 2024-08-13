@@ -22,7 +22,7 @@ import com.example.sharebiteapp.Utility.SessionManager;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DonatedFoodListActivity extends BottomMenuActivity  implements DonatedListAdapter.OnDeleteClickListener,DonatedListAdapter.OnTextClickListener
+public class DonatedFoodListActivity extends BottomMenuActivity  implements DonatedListAdapter.OnDeleteClickListener,DonatedListAdapter.OnTextClickListener,DonatedListAdapter.OnEditClickListener
 {
 
     private RecyclerView recyclerView;
@@ -50,7 +50,7 @@ public class DonatedFoodListActivity extends BottomMenuActivity  implements Dona
             @Override
             public void onSuccess(List<DonateFood> data) {
                 list = new ArrayList<>(data);
-                adapter = new DonatedListAdapter(DonatedFoodListActivity.this, list,DonatedFoodListActivity.this,DonatedFoodListActivity.this);
+                adapter = new DonatedListAdapter(DonatedFoodListActivity.this, list,DonatedFoodListActivity.this,DonatedFoodListActivity.this,DonatedFoodListActivity.this);
 
                 RecyclerView.LayoutManager layoutManager = new GridLayoutManager(DonatedFoodListActivity.this, 2);
                 recyclerView.setLayoutManager(layoutManager);
@@ -88,6 +88,13 @@ public class DonatedFoodListActivity extends BottomMenuActivity  implements Dona
 
         Intent intent = new Intent(DonatedFoodListActivity.this, DonateFoodDetail.class);
         intent.putExtra("intentdonationId", donateFood.donationId);
+        startActivity(intent);
+    }
+    public void editDonateFood(int position)
+    {
+        DonateFood donateFood = list.get(position);
+        Intent intent = new Intent(DonatedFoodListActivity.this, DonateFoodUpdateActivity.class);
+        intent.putExtra("editdonationId", donateFood.donationId);
         startActivity(intent);
     }
 }

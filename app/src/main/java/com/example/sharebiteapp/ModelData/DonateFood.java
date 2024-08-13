@@ -6,6 +6,7 @@ import com.example.sharebiteapp.Utility.FoodStatus;
 import com.example.sharebiteapp.Utility.Utils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DonateFood {
@@ -17,10 +18,11 @@ public class DonateFood {
       public double price;
       public Boolean fooddeleted ;
       public String createdon;
+      public String updatedon;
       public int status;
       public  Location location;
       public   Uri[] imageUris;
-
+     public List<Uri> uploadedImageUris;
     public DonateFood() {
     }
     public DonateFood( String donatedBy, String title, String description, String bestBefore, double price,Location location,Uri[] imageUris) {
@@ -98,6 +100,26 @@ public class DonateFood {
         return FoodStatus.getByIndex(status).toString();
     }
 
+    public Uri[] getImageUris() {
+        return imageUris;
+    }
+
+    public void setImageUris(Uri[] imageUris) {
+        this.imageUris = imageUris;
+    }
+
+    public List<Uri> getUploadedImageUris() {
+        return uploadedImageUris;
+    }
+
+    public void setUploadedImageUris(List<Uri> uploadedImageUris) {
+        this.uploadedImageUris = uploadedImageUris;
+    }
+
+    public void setUpdatedon(String updatedon) {
+        this.updatedon = updatedon;
+    }
+
     public Map<String, Object> toMap() {
         Map<String, Object> result = new HashMap<>();
         result.put("donationId", donationId);
@@ -109,6 +131,17 @@ public class DonateFood {
         result.put("fooddeleted", fooddeleted);
         result.put("createdon", createdon);
         result.put("status", status);
+        result.put("updatedon", updatedon);
+
+        return result;
+    }
+    public Map<String, Object> toMapUpdate() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("title", title);
+        result.put("description", description);
+        result.put("bestBefore", bestBefore);
+        result.put("price", price);
+        result.put("updatedon", updatedon);
 
         return result;
     }

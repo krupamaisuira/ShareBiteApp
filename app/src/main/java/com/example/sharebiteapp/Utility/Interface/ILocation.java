@@ -8,4 +8,5 @@ public interface ILocation {
     void addlocation(Location model, OperationCallback callback);
     void deleteLocationByDonationID(String donationId, OperationCallback callback);
     void getLocationByDonationId(String uid, ListOperationCallback callback);
+    void updatelocation(Location model, OperationCallback callback);
 }
