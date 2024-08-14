@@ -8,6 +8,8 @@ public class RequestFood {
     public String  requestedBy ;
     public String requestedon;
 
+    public RequestFood() {
+    }
     public RequestFood(String requestforId, String requestedBy) {
         this.requestforId = requestforId;
         this.requestedBy = requestedBy;
