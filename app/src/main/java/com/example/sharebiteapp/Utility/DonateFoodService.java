@@ -3,7 +3,7 @@
     import android.net.Uri;
     import android.util.Log;
     import android.widget.Toast;
-
+    import java.util.concurrent.atomic.AtomicInteger;
     import androidx.annotation.NonNull;
 
     import com.example.sharebiteapp.DonateFoodActivity;
@@ -87,31 +87,52 @@
                 }
             });
         }
-        public void getAllDonatedFood(String userId,final ListOperationCallback<List<DonateFood>> callback) {
+        public void getAllDonatedFood(String userId, final ListOperationCallback<List<DonateFood>> callback) {
             reference.child(_collectionName).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     List<DonateFood> donatedFoodList = new ArrayList<>();
+                    List<DonateFood> tempList = new ArrayList<>();
+
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         DonateFood food = snapshot.getValue(DonateFood.class);
-                        Log.d("donate food service","user id  " + userId);
-                        Log.d("donate food service","donation by id  " + food.getDonatedBy());
-                        if (food != null && food.fooddeleted == false  && userId.equals(food.getDonatedBy())) {
-                            Log.d("donate food service","inside food list  " + food.getDonatedBy());
+                        if (food != null && !food.fooddeleted && userId.equals(food.getDonatedBy())) {
                             food.setDonationId(snapshot.getKey());
-                            donatedFoodList.add(food);
+                            tempList.add(food);
                         }
                     }
-                    if (callback != null) {
+
+                    if (tempList.isEmpty()) {
                         callback.onSuccess(donatedFoodList);
+                        return;
+                    }
+
+                    AtomicInteger pendingRequests = new AtomicInteger(tempList.size());
+                    for (DonateFood food : tempList) {
+                        getAllPhotos(food.getDonationId(), new ListOperationCallback<List<Uri>>() {
+                            @Override
+                            public void onSuccess(List<Uri> imageUris) {
+                                food.setUploadedImageUris(imageUris);
+                                donatedFoodList.add(food);
+                                if (pendingRequests.decrementAndGet() == 0) {
+                                    callback.onSuccess(donatedFoodList);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(String error) {
+                                Log.e("Error", "Fetching photos failed: " + error);
+                                if (pendingRequests.decrementAndGet() == 0) {
+                                    callback.onSuccess(donatedFoodList);
+                                }
+                            }
+                        });
                     }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                    if (callback != null) {
-                        callback.onFailure(databaseError.getMessage());
-                    }
+                    callback.onFailure(databaseError.getMessage());
                 }
             });
         }
@@ -227,33 +248,81 @@
 
 
         // region request food
-public void getAllRequestFoodList(String userId,final ListOperationCallback<List<DonateFood>> callback) {
-    reference.child(_collectionName).addValueEventListener(new ValueEventListener() {
-        @Override
-        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-            List<DonateFood> donatedFoodList = new ArrayList<>();
-            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                DonateFood food = snapshot.getValue(DonateFood.class);
-                if (food != null && food.fooddeleted == false && food.status == FoodStatus.Available.getIndex() && !userId.equals(food.getDonatedBy())) {
-                    food.setDonationId(snapshot.getKey());
-                    donatedFoodList.add(food);
+//public void getAllRequestFoodList(String userId,final ListOperationCallback<List<DonateFood>> callback) {
+//    reference.child(_collectionName).addValueEventListener(new ValueEventListener() {
+//        @Override
+//        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//            List<DonateFood> donatedFoodList = new ArrayList<>();
+//            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+//                DonateFood food = snapshot.getValue(DonateFood.class);
+//                if (food != null && food.fooddeleted == false && food.status == FoodStatus.Available.getIndex() && !userId.equals(food.getDonatedBy())) {
+//                    food.setDonationId(snapshot.getKey());
+//                    donatedFoodList.add(food);
+//                }
+//            }
+//            if (callback != null) {
+//                callback.onSuccess(donatedFoodList);
+//            }
+//        }
+//
+//        @Override
+//        public void onCancelled(@NonNull DatabaseError databaseError) {
+//            if (callback != null) {
+//                callback.onFailure(databaseError.getMessage());
+//            }
+//        }
+//    });
+//}
+
+public void getAllRequestFoodList(String userId, final ListOperationCallback<List<DonateFood>> callback) {
+            reference.child(_collectionName).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    List<DonateFood> donatedFoodList = new ArrayList<>();
+                    List<DonateFood> tempList = new ArrayList<>();
+
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        DonateFood food = snapshot.getValue(DonateFood.class);
+                        if (food != null && food.fooddeleted == false && food.status == FoodStatus.Available.getIndex() && !userId.equals(food.getDonatedBy())) {
+                            food.setDonationId(snapshot.getKey());
+                            tempList.add(food);
+                        }
+                    }
+
+                    if (tempList.isEmpty()) {
+                        callback.onSuccess(donatedFoodList);
+                        return;
+                    }
+
+                    AtomicInteger pendingRequests = new AtomicInteger(tempList.size());
+                    for (DonateFood food : tempList) {
+                        getAllPhotos(food.getDonationId(), new ListOperationCallback<List<Uri>>() {
+                            @Override
+                            public void onSuccess(List<Uri> imageUris) {
+                                food.setUploadedImageUris(imageUris);
+                                donatedFoodList.add(food);
+                                if (pendingRequests.decrementAndGet() == 0) {
+                                    callback.onSuccess(donatedFoodList);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(String error) {
+                                Log.e("Error", "Fetching photos failed: " + error);
+                                if (pendingRequests.decrementAndGet() == 0) {
+                                    callback.onSuccess(donatedFoodList);
+                                }
+                            }
+                        });
+                    }
                 }
-            }
-            if (callback != null) {
-                callback.onSuccess(donatedFoodList);
-            }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    callback.onFailure(databaseError.getMessage());
+                }
+            });
         }
-
-        @Override
-        public void onCancelled(@NonNull DatabaseError databaseError) {
-            if (callback != null) {
-                callback.onFailure(databaseError.getMessage());
-            }
-        }
-    });
-}
-
-
 // endregion
 
 private void getAllPhotos(String donationId,ListOperationCallback<List<Uri>> callback)

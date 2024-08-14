@@ -2,6 +2,7 @@ package com.example.sharebiteapp.CustomAdapter;
 
 
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.sharebiteapp.ModelData.DonateFood;
 import com.example.sharebiteapp.R;
 import com.example.sharebiteapp.Utility.FoodStatus;
@@ -61,7 +63,7 @@ public class DonatedListAdapter extends RecyclerView.Adapter<DonatedListAdapter.
     @Override
     public void onBindViewHolder(@NonNull DonationViewHolder holder, int position) {
         DonateFood donateFood = donationList.get(position);
-
+        Log.d("daapter","image " + donateFood.getTitle());
         holder.textView.setText(donateFood.getTitle());
         holder.statusTextView.setText(FoodStatus.getByIndex(donateFood.getStatus()).toString());
         FoodStatus status = FoodStatus.fromString(holder.statusTextView.getText().toString());
@@ -95,6 +97,17 @@ public class DonatedListAdapter extends RecyclerView.Adapter<DonatedListAdapter.
                 }
             }
         });
+
+        if(donateFood.uploadedImageUris != null) {
+
+            Uri selectedImage =  Uri.parse(donateFood.uploadedImageUris.get(0).toString());
+            Glide.with(holder.imageView.getContext())
+                    .load(selectedImage.toString())
+                    .error(android.R.drawable.ic_menu_gallery) // Error image
+                    .into( holder.imageView);
+
+
+        }
     }
 
     @Override
