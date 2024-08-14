@@ -2,6 +2,8 @@ package com.example.sharebiteapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -30,6 +32,7 @@ public class DonatedFoodListActivity extends BottomMenuActivity  implements Dona
     DonateFoodService donatefoodservice;
     List<DonateFood> list ;
     private SessionManager sessionManager;
+    private Button btnuserrequested;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,11 +40,19 @@ public class DonatedFoodListActivity extends BottomMenuActivity  implements Dona
       //  setContentView(R.layout.activity_donated_food_list);
         getLayoutInflater().inflate(R.layout.activity_donated_food_list, findViewById(R.id.container));
         recyclerView = findViewById(R.id.recyclerView);
+        btnuserrequested = findViewById(R.id.btnuserrequested);
         donatefoodservice = new DonateFoodService();
         list = new ArrayList<>();
         sessionManager = SessionManager.getInstance(this);
         setAdapterDonatedFoodList();
 
+        btnuserrequested.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(DonatedFoodListActivity.this, UserRequestedActivity.class);
+                startActivity(intent);
+            }
+        });
 
     }
     public void setAdapterDonatedFoodList()

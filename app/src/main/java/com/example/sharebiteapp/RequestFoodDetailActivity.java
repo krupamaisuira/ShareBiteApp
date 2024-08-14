@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,7 +31,7 @@ import com.example.sharebiteapp.Utility.Utils;
 public class RequestFoodDetailActivity extends BottomMenuActivity {
 
     DonateFoodService donateFoodService;
-    Button btnRequestFood;
+    Button btnRequestFood,buttonDonated,buttonCancel;
     private SessionManager sessionManager;
     RequestFoodService requestFoodService;
     String location;
@@ -53,6 +54,7 @@ public class RequestFoodDetailActivity extends BottomMenuActivity {
                 findViewById(R.id.reqdetailimgview4)
         };
         firstimg = findViewById(R.id.reqfirstimg);
+
         String donationId =  getIntent().getStringExtra("intentdonationId");
         donateFoodService.getDonationDetail(donationId, new ListOperationCallback<DonateFood>() {
             @Override
@@ -71,15 +73,26 @@ public class RequestFoodDetailActivity extends BottomMenuActivity {
         btnRequestFood.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                RequestFood request = new RequestFood(donationId,sessionManager.getUserID());
+                RequestFood request = new RequestFood(donationId,sessionManager.getUserID(),null,null);
                 requestFoodService.requestfood(request, new OperationCallback() {
                     @Override
                     public void onSuccess() {
+                        donateFoodService.updateFoodStatus(donationId, FoodStatus.Requested.getIndex(), new OperationCallback() {
+                            @Override
+                            public void onSuccess() {
+                                Intent intent = new Intent(RequestFoodDetailActivity.this, RequestFoodSuccessActivity.class);
+                                intent.putExtra("location", location);
+                                startActivity(intent);
+                                finish();
+                            }
 
-                        Intent intent = new Intent(RequestFoodDetailActivity.this, RequestFoodSuccessActivity.class);
-                        intent.putExtra("location", location);
-                        startActivity(intent);
-                        finish();
+                            @Override
+                            public void onFailure(String errorMessage) {
+
+                            }
+                        });
+
+
                     }
 
                     @Override

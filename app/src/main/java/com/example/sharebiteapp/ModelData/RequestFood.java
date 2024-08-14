@@ -7,12 +7,16 @@ public class RequestFood {
     public String requestforId ;
     public String  requestedBy ;
     public String requestedon;
-
+    public  User requestedUserDetail;
+    public String cancelby;
+    public String cancelon;
     public RequestFood() {
     }
-    public RequestFood(String requestforId, String requestedBy) {
+    public RequestFood(String requestforId, String requestedBy,String cancelBy,String cancelon) {
         this.requestforId = requestforId;
         this.requestedBy = requestedBy;
+        this.cancelon = cancelon;
+        this.cancelby = cancelBy;
         this.requestedon = Utils.getCurrentDatetime();
     }
 

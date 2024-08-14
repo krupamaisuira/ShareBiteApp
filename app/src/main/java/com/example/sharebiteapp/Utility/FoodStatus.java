@@ -3,7 +3,8 @@ package com.example.sharebiteapp.Utility;
 public enum FoodStatus {
     Available(0),
     Expired(1),
-    Donated(2);
+    Donated(2),
+    Requested(3);
 
     private int index;
 
