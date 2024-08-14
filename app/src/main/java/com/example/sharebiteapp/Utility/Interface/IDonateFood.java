@@ -17,4 +17,6 @@ public interface IDonateFood {
     void getDonationDetail(String uid, ListOperationCallback<DonateFood> callback);
     void getAllRequestFoodList(String userId,final ListOperationCallback<List<DonateFood>> callback);
     void updatedonatedfood(DonateFood food, OperationCallback callback);
+    void updateFoodStatus(String uid,int status,OperationCallback callback);
+    void fetchUserRequestsForDonor(final String donorUserId, final ListOperationCallback<List<DonateFood>> callback);
 }

@@ -23,6 +23,8 @@ public class DonateFood {
       public  Location location;
       public   Uri[] imageUris;
      public List<Uri> uploadedImageUris;
+     public RequestFood requestedBy;
+
     public DonateFood() {
     }
     public DonateFood( String donatedBy, String title, String description, String bestBefore, double price,Location location,Uri[] imageUris) {

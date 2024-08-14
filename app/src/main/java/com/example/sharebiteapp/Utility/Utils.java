@@ -82,6 +82,10 @@ public class Utils {
                 textColor = ContextCompat.getColor(context, R.color.green);
                 backgroundColor = ContextCompat.getColor(context, R.color.light_green);
                 break;
+            case Requested:
+                textColor = ContextCompat.getColor(context, R.color.dark_orange);
+                backgroundColor = ContextCompat.getColor(context, R.color.light_yellow);
+                break;
             default:
                 textColor = ContextCompat.getColor(context, android.R.color.white);
                 backgroundColor = ContextCompat.getColor(context, R.color.holo_blue);
