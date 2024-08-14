@@ -1,6 +1,7 @@
 package com.example.sharebiteapp.CustomAdapter;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 import com.example.sharebiteapp.ModelData.DonateFood;
 import com.example.sharebiteapp.R;
 import java.util.ArrayList;
@@ -55,6 +58,16 @@ public class RequestFoodListAdapter extends RecyclerView.Adapter<RequestFoodList
                 }
             }
         });
+        if(donateFood.uploadedImageUris != null) {
+
+            Uri selectedImage =  Uri.parse(donateFood.uploadedImageUris.get(0).toString());
+            Glide.with(holder.reqImageView.getContext())
+                    .load(selectedImage.toString())
+                    .error(android.R.drawable.ic_menu_gallery) // Error image
+                    .into( holder.reqImageView);
+
+
+        }
 
     }
 

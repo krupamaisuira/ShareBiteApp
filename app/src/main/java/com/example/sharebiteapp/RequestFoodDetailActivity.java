@@ -1,10 +1,12 @@
 package com.example.sharebiteapp;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -14,6 +16,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.bumptech.glide.Glide;
 import com.example.sharebiteapp.Interface.ListOperationCallback;
 import com.example.sharebiteapp.Interface.OperationCallback;
 import com.example.sharebiteapp.ModelData.DonateFood;
@@ -31,7 +34,8 @@ public class RequestFoodDetailActivity extends BottomMenuActivity {
     private SessionManager sessionManager;
     RequestFoodService requestFoodService;
     String location;
-
+    private ImageView[] imageViews;
+    private ImageView firstimg;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +46,13 @@ public class RequestFoodDetailActivity extends BottomMenuActivity {
         btnRequestFood = findViewById(R.id.btnRequestFood);
         requestFoodService = new RequestFoodService();
         sessionManager = SessionManager.getInstance(this);
-
+        imageViews = new ImageView[]{
+                findViewById(R.id.reqdetailimgview),
+                findViewById(R.id.reqdetailimgview2),
+                findViewById(R.id.reqdetailimgview3),
+                findViewById(R.id.reqdetailimgview4)
+        };
+        firstimg = findViewById(R.id.reqfirstimg);
         String donationId =  getIntent().getStringExtra("intentdonationId");
         donateFoodService.getDonationDetail(donationId, new ListOperationCallback<DonateFood>() {
             @Override
@@ -101,6 +111,28 @@ public class RequestFoodDetailActivity extends BottomMenuActivity {
         txtBestBefore.setText("Best before: " + model.getBestBefore());
         txtDetailAddress.setText(model.location.getAddress());
         txtdetaildesc.setText(model.getDescription());
+        if(model.uploadedImageUris != null && model.uploadedImageUris.size() > 0) {
 
+            for (int i = 0; i < model.uploadedImageUris.size(); i++) {
+
+                Uri selectedImage = Uri.parse(model.uploadedImageUris.get(i).toString());
+
+                if(i == 0)
+                {
+                    Glide.with(firstimg.getContext())
+                            .load(selectedImage.toString())
+                            .error(android.R.drawable.ic_menu_gallery) // Error image
+                            .into(firstimg);
+                }
+
+                imageViews[i].setVisibility(View.VISIBLE);
+                Glide.with(imageViews[i].getContext())
+                        .load(selectedImage.toString())
+                        .error(android.R.drawable.ic_menu_gallery) // Error image
+                        .into(imageViews[i]);
+
+
+            }
+        }
     }
 }
