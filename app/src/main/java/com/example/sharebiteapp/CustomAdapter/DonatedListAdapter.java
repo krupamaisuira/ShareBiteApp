@@ -15,6 +15,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.util.Util;
 import com.example.sharebiteapp.ModelData.DonateFood;
 import com.example.sharebiteapp.R;
 import com.example.sharebiteapp.Utility.FoodStatus;
@@ -65,6 +66,11 @@ public class DonatedListAdapter extends RecyclerView.Adapter<DonatedListAdapter.
         DonateFood donateFood = donationList.get(position);
         Log.d("daapter","image " + donateFood.getTitle());
         holder.textView.setText(donateFood.getTitle());
+        if(Utils.isFoodExpired(donateFood.bestBefore) == 0)
+        {
+            donateFood.setStatus(FoodStatus.Expired.getIndex());
+        }
+
         holder.statusTextView.setText(FoodStatus.getByIndex(donateFood.getStatus()).toString());
         FoodStatus status = FoodStatus.fromString(holder.statusTextView.getText().toString());
         Utils.setStatusColor(context,status, holder.statusTextView);

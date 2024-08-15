@@ -355,7 +355,7 @@ public void getAllRequestFoodList(String userId, final ListOperationCallback<Lis
 
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         DonateFood food = snapshot.getValue(DonateFood.class);
-                        if (food != null && food.fooddeleted == false && food.status == FoodStatus.Available.getIndex() && !userId.equals(food.getDonatedBy())) {
+                        if (food != null && food.fooddeleted == false && food.status == FoodStatus.Available.getIndex() && !userId.equals(food.getDonatedBy()) && Utils.isFoodExpired(food.bestBefore) == 1) {
                             food.setDonationId(snapshot.getKey());
                             tempList.add(food);
                         }

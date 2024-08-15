@@ -27,7 +27,7 @@ public class DonateFood {
 
     public DonateFood() {
     }
-    public DonateFood( String donatedBy, String title, String description, String bestBefore, double price,Location location,Uri[] imageUris) {
+    public DonateFood( String donatedBy, String title, String description, String bestBefore, double price,Location location,Uri[] imageUris,int status) {
 
 
         this.donatedBy = donatedBy;
@@ -36,7 +36,7 @@ public class DonateFood {
         this.bestBefore = bestBefore;
         this.price = price;
         this.fooddeleted = false;
-        this.status = FoodStatus.Available.getIndex();
+        this.status = (status > 0 ? status : FoodStatus.Available.getIndex());
         this.createdon = Utils.getCurrentDatetime();
         this.location = location;
         this.imageUris = imageUris;

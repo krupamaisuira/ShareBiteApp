@@ -155,6 +155,11 @@ public class DonateFoodDetail extends BottomMenuActivity {
         txtBestBefore.setText("Best before: " + model.getBestBefore());
         txtDetailAddress.setText(model.location.getAddress());
         txtdetaildesc.setText(model.getDescription());
+        if(Utils.isFoodExpired(model.bestBefore) == 0)
+        {
+            model.setStatus(FoodStatus.Expired.getIndex());
+        }
+
         txtDetailStatus.setText(model.getFoodStatus());
         FoodStatus status = FoodStatus.fromString(txtDetailStatus.getText().toString());
         Utils.setStatusColor(DonateFoodDetail.this,status, txtDetailStatus);
