@@ -1,6 +1,8 @@
 package com.example.sharebiteapp;
 
 import android.Manifest;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -42,6 +44,8 @@ import com.example.sharebiteapp.Utility.SessionManager;
 import com.example.sharebiteapp.Utility.Utils;
 import com.bumptech.glide.Glide;
 
+import java.util.Calendar;
+
 public class DonateFoodUpdateActivity extends BottomMenuActivity {
     DonateFoodService donateFoodService;
     LocationService locationService;
@@ -63,6 +67,8 @@ public class DonateFoodUpdateActivity extends BottomMenuActivity {
     private boolean isUpdated = true;
     String donationId;
     private SessionManager sessionManager;
+    private int year, month, day, hour, minute;
+    int status = FoodStatus.Available.getIndex();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -156,8 +162,58 @@ public class DonateFoodUpdateActivity extends BottomMenuActivity {
                 updateDonateFood();
             }
         });
+        txtBestBefore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Show Date Picker Dialog first
+                showDatePickerDialog();
+            }
+        });
 
     }
+    private void showDatePickerDialog() {
+        // Get Current Date
+        final Calendar calendar = Calendar.getInstance();
+        year = calendar.get(Calendar.YEAR);
+        month = calendar.get(Calendar.MONTH);
+        day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(DonateFoodUpdateActivity.this,
+                (view, selectedYear, selectedMonth, selectedDay) -> {
+                    year = selectedYear;
+                    month = selectedMonth;
+                    day = selectedDay;
+
+                    // Once the date is selected, show the Time Picker Dialog
+                    showTimePickerDialog();
+                }, year, month, day);
+        datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
+        datePickerDialog.show();
+    }
+
+    private void showTimePickerDialog() {
+        // Get Current Time
+        final Calendar calendar = Calendar.getInstance();
+        hour = calendar.get(Calendar.HOUR_OF_DAY);
+        minute = calendar.get(Calendar.MINUTE);
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(DonateFoodUpdateActivity.this,
+                (view, selectedHour, selectedMinute) -> {
+                    hour = selectedHour;
+                    minute = selectedMinute;
+
+                    // Once time is selected, update the EditText with date and time
+                    updateDateTimeEditText();
+                }, hour, minute, true);
+
+        timePickerDialog.show();
+    }
+
+    private void updateDateTimeEditText() {
+        String dateTime = String.format("%04d-%02d-%02d %02d:%02d", year, month + 1, day, hour, minute);
+        txtBestBefore.setText(dateTime);
+    }
+
     private void setupTextWatchers() {
         TextWatcher textWatcher = new TextWatcher() {
             @Override
@@ -231,7 +287,7 @@ public class DonateFoodUpdateActivity extends BottomMenuActivity {
             if(isEdited)
             {
 
-                DonateFood food = new DonateFood(sessionManager.getUserID(),title,desc,bestbefore,Double.parseDouble(price),null,null);
+                DonateFood food = new DonateFood(sessionManager.getUserID(),title,desc,bestbefore,Double.parseDouble(price),null,null,status);
                 food.setDonationId(donationId);
 
                 donateFoodService.updatedonatedfood(food, new OperationCallback() {
@@ -297,7 +353,7 @@ public class DonateFoodUpdateActivity extends BottomMenuActivity {
 
         imgCapture.setEnabled(true);
         imgCapture.setVisibility(View.VISIBLE);
-
+        status = model.status;
         txtTitle.setText(model.getTitle());
         if(model.price > 0) {
             txtShowPrice.setText(String.format("Price: $%.2f", model.getPrice()));

@@ -6,6 +6,8 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
@@ -33,6 +35,7 @@ import com.example.sharebiteapp.ModelData.CustomPrediction;
 import com.example.sharebiteapp.ModelData.DonateFood;
 import com.example.sharebiteapp.ModelData.Location;
 import com.example.sharebiteapp.Utility.DonateFoodService;
+import com.example.sharebiteapp.Utility.FoodStatus;
 import com.example.sharebiteapp.Utility.LocationUtils;
 import com.example.sharebiteapp.Utility.SessionManager;
 import com.example.sharebiteapp.Utility.Utils;
@@ -48,6 +51,7 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import android.Manifest;
 
@@ -68,6 +72,10 @@ public class DonateFoodActivity extends BottomMenuActivity {
 
     Location location;
     LocationUtils locationUtils;
+
+
+    private int year, month, day, hour, minute;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -151,25 +159,63 @@ public class DonateFoodActivity extends BottomMenuActivity {
         });
 
 
-    }
-//    private Uri[] getImageUrisFromImageViews() {
-//        Uri[] uris = new Uri[imageViews.length];
-//
-//        for (int i = 0; i < imageViews.length; i++) {
-//
-//            uris[i] = (Uri) imageViews[i].getTag();
-//            Log.d("DonateFoodActivity", "Retrieved URI: " + (uris[i] != null ? uris[i].toString() : "null"));
-//        }
-//
-//        return uris;
-//    }
+        txtbtbefore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Show Date Picker Dialog first
+                showDatePickerDialog();
+            }
+        });
 
+    }
+    private void showDatePickerDialog() {
+        // Get Current Date
+        final Calendar calendar = Calendar.getInstance();
+        year = calendar.get(Calendar.YEAR);
+        month = calendar.get(Calendar.MONTH);
+        day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(DonateFoodActivity.this,
+                (view, selectedYear, selectedMonth, selectedDay) -> {
+                    year = selectedYear;
+                    month = selectedMonth;
+                    day = selectedDay;
+
+                    // Once the date is selected, show the Time Picker Dialog
+                    showTimePickerDialog();
+                }, year, month, day);
+        datePickerDialog.getDatePicker().setMinDate(calendar.getTimeInMillis());
+        datePickerDialog.show();
+    }
+
+    private void showTimePickerDialog() {
+        // Get Current Time
+        final Calendar calendar = Calendar.getInstance();
+        hour = calendar.get(Calendar.HOUR_OF_DAY);
+        minute = calendar.get(Calendar.MINUTE);
+
+        TimePickerDialog timePickerDialog = new TimePickerDialog(DonateFoodActivity.this,
+                (view, selectedHour, selectedMinute) -> {
+                    hour = selectedHour;
+                    minute = selectedMinute;
+
+                    // Once time is selected, update the EditText with date and time
+                    updateDateTimeEditText();
+                }, hour, minute, true);
+
+        timePickerDialog.show();
+    }
+
+    private void updateDateTimeEditText() {
+        String dateTime = String.format("%04d-%02d-%02d %02d:%02d", year, month + 1, day, hour, minute);
+        txtbtbefore.setText(dateTime);
+    }
 
     public void addDonateFood()
     {
         String title = txttitle.getText().toString().trim();
         String desc = txtdesc.getText().toString().trim();
-        String bestbefore = txtbtbefore.getText().toString().trim();
+        String bestbefore = txtbtbefore.getText().toString();
         String price = txtprice.getText().toString();
 
 
@@ -207,7 +253,7 @@ public class DonateFoodActivity extends BottomMenuActivity {
 
 
 
-        DonateFood food = new DonateFood(sessionManager.getUserID(),title,desc,bestbefore,Double.parseDouble(price),location,imageUris);
+        DonateFood food = new DonateFood(sessionManager.getUserID(),title,desc,bestbefore,Double.parseDouble(price),location,imageUris, FoodStatus.Available.getIndex());
         donatefoodservice.donatefood(food, new OperationCallback() {
             @Override
             public void onSuccess() {

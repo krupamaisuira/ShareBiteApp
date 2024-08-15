@@ -17,8 +17,10 @@ import com.example.sharebiteapp.R;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -114,5 +116,25 @@ public class Utils {
 
         return uris;
     }
+    public static int isFoodExpired(String bestBeforeDateStr) {
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+        try {
+            Date bestBeforeDate = sdf.parse(bestBeforeDateStr);
+            Calendar currentDate = Calendar.getInstance();
+
+            if (bestBeforeDate.before(currentDate.getTime())) {
+                // The food is expired, return 0
+                return 0;
+            } else {
+                // The food is not expired, return 1
+                return 1;
+            }
+        } catch (ParseException e) {
+
+            e.printStackTrace();
+            return -1;
+        }
+    }
 }
