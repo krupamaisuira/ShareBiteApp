@@ -44,7 +44,10 @@ import com.example.sharebiteapp.Utility.SessionManager;
 import com.example.sharebiteapp.Utility.Utils;
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.stream.Stream;
 
 public class DonateFoodUpdateActivity extends BottomMenuActivity {
     DonateFoodService donateFoodService;
@@ -306,18 +309,38 @@ public class DonateFoodUpdateActivity extends BottomMenuActivity {
             if(isEditedPhotos)
             {
 
-//                photoService.updateImages(donationId,imageUris, new OperationCallback() {
-//                    @Override
-//                    public void onSuccess() {
-//                        isUpdated = true;
-//                    }
-//
-//                    @Override
-//                    public void onFailure(String errMessage) {
-//                        isUpdated = false;
-//
-//                    }
-//                });
+
+                Uri[] uplaodedimage= Stream.of(imageUris)
+                        .filter(uri -> uri != null && !Utils.isFirebaseStorageUrl(uri.toString()))
+                        .toArray(Uri[]::new);;
+                if(uplaodedimage != null && uplaodedimage.length > 0)
+                {
+                    Toast.makeText(DonateFoodUpdateActivity.this,"photos added",Toast.LENGTH_SHORT).show();
+                    photoService.uploadImages(donationId, uplaodedimage, new OperationCallback() {
+                        @Override
+                        public void onSuccess() {
+                            isUpdated = true;
+                        }
+
+                        @Override
+                        public void onFailure(String errMessage) {
+                            isUpdated = false;
+                        }
+                    });
+                }
+
+                photoService.updatePhotoOrder(donationId, new OperationCallback() {
+                    @Override
+                    public void onSuccess() {
+                        isUpdated = true;
+                    }
+
+                    @Override
+                    public void onFailure(String errMessage) {
+                        isUpdated = false;
+                    }
+                });
+
             }
             if(isEditedLocation)
             {
@@ -334,6 +357,8 @@ public class DonateFoodUpdateActivity extends BottomMenuActivity {
 
                     }
                 });
+
+
             }
             if(isUpdated)
             {
@@ -439,18 +464,30 @@ public class DonateFoodUpdateActivity extends BottomMenuActivity {
         if (index < imageCount && imageCount > 0) {
             for (int i = index; i < imageCount - 1; i++) {
 
+                if(Utils.isFirebaseStorageUrl(imageViews[i].getTag().toString()));
+                {
+
+                    isEditedPhotos = true;
+                    photoService.deleteImage(donationId,imageViews[i].getTag().toString());
+                }
+
                 Drawable nextDrawable = imageViews[i + 1].getDrawable();
                 Uri nextTag = (Uri) imageViews[i + 1].getTag();
                 imageViews[i].setImageDrawable(nextDrawable);
                 imageViews[i].setTag(nextTag);
             }
 
+            Log.d("image url", "url : " + imageViews[imageCount - 1].getTag().toString());
+            Log.d("image url", "check url : " + Utils.isFirebaseStorageUrl(imageViews[imageCount - 1].getTag().toString()));
+
+
+
             imageViews[imageCount - 1].setVisibility(View.GONE);
             imageViews[imageCount - 1].setImageDrawable(null);
             imageViews[imageCount - 1].setTag(null);
             closeButtons[imageCount - 1].setVisibility(View.GONE);
             imageCount--;
-            isEditedPhotos =  true;
+
             if (imageCount < imageViews.length) {
                 imgCapture.setEnabled(true);
                 imgCapture.setVisibility(View.VISIBLE);

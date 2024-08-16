@@ -137,4 +137,7 @@ public class Utils {
             return -1;
         }
     }
+   public static boolean isFirebaseStorageUrl(String url) {
+        return url != null && url.startsWith("https://firebasestorage.googleapis.com/");
+    }
 }

@@ -16,6 +16,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -137,5 +138,154 @@ public class PhotoService implements IPhoto {
             });
         }
     }
-  
+    public void deleteImage(String donationId, String photoPath) {
+        DatabaseReference photoRef = reference.child(_collectionName);
+
+        // Query the photos by donationId
+        Query photoQuery = photoRef.orderByChild("donationId").equalTo(donationId);
+
+        photoQuery.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                if (task.getResult() != null && task.getResult().exists()) {
+                    Log.d("DeleteImage", "Query successful. Processing results...");
+
+                    boolean photoDeleted = false;
+
+                    for (DataSnapshot snapshot : task.getResult().getChildren()) {
+                        String storedPhotoPath = snapshot.child("imagePath").getValue(String.class);
+                        Log.d("DeleteImage", "Stored path: " + storedPhotoPath);
+
+                        if (storedPhotoPath != null && storedPhotoPath.equals(photoPath)) {
+                            Log.d("DeleteImage", "Matching photo found. Deleting...");
+
+                            // Delete the image from Firebase Storage
+                            deleteImageFromStorage(donationId, storedPhotoPath);
+
+                            // Delete the document from 'photos' collection
+                            snapshot.getRef().removeValue().addOnCompleteListener(removeTask -> {
+                                if (removeTask.isSuccessful()) {
+                                    Log.d("DeleteImage", "Image and database entry deleted successfully.");
+                                } else {
+                                    Log.e("DeleteImage", "Failed to delete database entry. Error: " + removeTask.getException());
+                                }
+                            });
+
+                            photoDeleted = true;
+                            break; // Stop looping after deleting the matching photo
+                        }
+                    }
+
+                    if (!photoDeleted) {
+                        Log.w("DeleteImage", "Photo path not found in the database.");
+                    }
+                } else {
+                    Log.e("DeleteImage", "No results found or results are empty.");
+                }
+            } else {
+                Log.e("DeleteImage", "Task failed. Error: " + task.getException());
+            }
+        });
+    }
+
+
+
+
+    private void deleteImageFromStorage(String donationId, String photoPath) {
+        // Reference to the image in Firebase Storage
+        StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(photoPath);
+
+        // Delete the image from Firebase Storage
+        storageRef.delete().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Log.d("DeleteImage", "Image deleted from Firebase Storage.");
+            } else {
+                Log.e("DeleteImage", "Failed to delete image from Firebase Storage.");
+            }
+        });
+    }
+
+    public void updatePhotoOrder(String donationId, OperationCallback callback) {
+        DatabaseReference photosRef = FirebaseDatabase.getInstance().getReference("photos");
+
+        // Query the photos by donationId
+        photosRef.orderByChild("donationId").equalTo(donationId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (!dataSnapshot.exists()) {
+                    if (callback != null) {
+                        callback.onFailure("No photos found for this donationId.");
+                    }
+                    return;
+                }
+
+                int order = 1;
+                boolean[] failureOccurred = {false};  // Track if a failure occurs
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    // Update the order field for each photo
+                    snapshot.getRef().child("order").setValue(order)
+                            .addOnFailureListener(e -> {
+                                // On failure, trigger the callback and set failureOccurred to true
+                                if (!failureOccurred[0]) { // Ensure failure is only handled once
+                                    failureOccurred[0] = true;
+                                    if (callback != null) {
+                                        callback.onFailure("Error updating photo order: " + e.getMessage());
+                                    }
+                                }
+                            });
+
+                    order++;
+                }
+
+                // After all updates are triggered, if no failure occurred, trigger success callback
+                if (!failureOccurred[0]) {
+                    if (callback != null) {
+                        callback.onSuccess();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                if (callback != null) {
+                    callback.onFailure("Database operation cancelled: " + databaseError.getMessage());
+                }
+            }
+        });
+    }
+
+
+
+
+//    public void reorderImage(String donationId, Uri[] imageUris) {
+//        List<Uri> firebaseStorageUris = new ArrayList<>();
+//        List<Uri> galleryImageUris = new ArrayList<>();
+//        for (int i = 0; i < imageUris.length; i++) {
+//            int order = i + 1;
+//            Uri imageUri = imageUris[i];
+//
+//            // Check if the URI is from Firebase Storage or the gallery
+//            if (imageUri != null && imageUri.getScheme() != null) {
+//                String scheme = imageUri.getScheme();
+//
+//                // Check if it's a Firebase Storage URI
+//                if (scheme.equals("gs") || (scheme.equals("https") && imageUri.toString().contains("firebasestorage"))) {
+//                    firebaseStorageUris.add(imageUri);
+//                }
+//               else
+//                {
+//                    galleryImageUris.add(imageUri);
+//                }
+//            }
+//        }
+//        int count = 1;
+//        if(firebaseStorageUris != null && firebaseStorageUris.size() > 0)
+//        {
+//            DatabaseReference photosRef = FirebaseDatabase.getInstance().getReference("photos");
+//            Query photoQuery = photosRef.orderByChild("donationId").equalTo(donationId);
+//        }
+//
+//
+//    }
+
 }
