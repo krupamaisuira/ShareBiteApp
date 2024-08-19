@@ -1,5 +1,6 @@
 package com.example.sharebiteapp.Utility;
 
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -8,6 +9,7 @@ import com.example.sharebiteapp.Interface.ListOperationCallback;
 import com.example.sharebiteapp.Interface.OperationCallback;
 import com.example.sharebiteapp.Interface.UserCallback;
 import com.example.sharebiteapp.ModelData.DonateFood;
+import com.example.sharebiteapp.ModelData.Location;
 import com.example.sharebiteapp.ModelData.RequestFood;
 import com.example.sharebiteapp.ModelData.User;
 import com.example.sharebiteapp.Utility.Interface.IRequestFood;
@@ -116,44 +118,6 @@ public class RequestFoodService implements IRequestFood {
                 });
     }
 
-
-    public void fetchRequestsForDonations(final List<DonateFood> donationList, final ListOperationCallback<List<DonateFood>> callback) {
-        final List<DonateFood> requestsList = new ArrayList<>();
-        final int[] remainingRequests = {donationList.size()}; // Use an array to keep track of remaining requests
-
-        if (remainingRequests[0] == 0) {
-            callback.onSuccess(requestsList);
-            return;
-        }
-
-        for (DonateFood donateFood : donationList) {
-            reference.orderByChild("requestFor").equalTo(donateFood.donationId)
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot foodRequestSnapshot) {
-                            for (DataSnapshot requestSnapshot : foodRequestSnapshot.getChildren()) {
-                                // Assume you have a Request model similar to DonateFood
-                                RequestFood request = requestSnapshot.getValue(RequestFood.class);
-                                if (request != null) {
-                                    // Add the donation to the list if it's requested
-                                    requestsList.add(donateFood);
-                                }
-                            }
-
-                            // Check if all requests have been processed
-                            remainingRequests[0]--;
-                            if (remainingRequests[0] == 0) {
-                                callback.onSuccess(requestsList);
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            callback.onFailure("Failed to read foodrequest data: " + databaseError.getMessage());
-                        }
-                    });
-        }
-    }
     public  void requestFoodCancel(String uid,String cancelby,OperationCallback callback)
     {
         Map<String, Object> updates = new HashMap<>();
@@ -177,4 +141,34 @@ public class RequestFoodService implements IRequestFood {
                     }
                 });
     }
+    public void fetchDonationRequests(String userId, ListOperationCallback<List<String>> callback) {
+
+        reference.child(_collectionName).orderByChild("requestedBy").equalTo(userId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    List<String> donationIds = new ArrayList<>();
+
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                            String requestForId = snapshot.child("requestforId").getValue(String.class);
+                            if (requestForId != null) {
+                                donationIds.add(requestForId);
+                            }
+                        }
+                        if (callback != null) {
+                            callback.onSuccess(donationIds);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        if (callback != null) {
+                            callback.onFailure(databaseError.getMessage());
+                        }
+                    }
+                });
+    }
+
+
+
 }

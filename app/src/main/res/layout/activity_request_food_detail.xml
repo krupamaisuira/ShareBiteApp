@@ -206,4 +206,12 @@
         android:text="Request"
         android:layout_gravity="center"
         android:layout_marginTop="24dp"/>
+    <Button
+        android:id="@+id/btnCancelFood"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="Cancel"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:layout_marginTop="24dp"/>
 </LinearLayout>

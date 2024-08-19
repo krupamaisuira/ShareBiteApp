@@ -11,6 +11,6 @@ import java.util.Map;
 public interface IRequestFood {
     void requestfood(RequestFood model, OperationCallback callback);
     void isRequestFoodExist(RequestFood model,final ListOperationCallback<RequestFood> callback);
-    void fetchRequestsForDonations(final List<DonateFood> donationList, final ListOperationCallback<List<DonateFood>> callback);
     void requestFoodCancel(String uid,String cancelby,OperationCallback callback);
+    void fetchDonationRequests(String userId, ListOperationCallback<List<String>> callback);
 }

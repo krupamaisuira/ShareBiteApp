@@ -2,8 +2,6 @@ package com.example.sharebiteapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -14,8 +12,8 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.sharebiteapp.CustomAdapter.DonatedListAdapter;
 import com.example.sharebiteapp.CustomAdapter.RequestFoodListAdapter;
+import com.example.sharebiteapp.CustomAdapter.ShowRequestHistoryListAdapter;
 import com.example.sharebiteapp.Interface.ListOperationCallback;
 import com.example.sharebiteapp.ModelData.DonateFood;
 import com.example.sharebiteapp.Utility.DonateFoodService;
@@ -24,44 +22,37 @@ import com.example.sharebiteapp.Utility.SessionManager;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RequestFoodListActivity extends BottomMenuActivity implements RequestFoodListAdapter.OnCartClickListener {
+public class ShowRequestHistoryActivity extends BottomMenuActivity implements ShowRequestHistoryListAdapter.OnCartClickListener,ShowRequestHistoryListAdapter.OnTextClickListener  {
 
     private RecyclerView recyclerView;
-    private RequestFoodListAdapter adapter;
+    private ShowRequestHistoryListAdapter adapter;
     DonateFoodService donatefoodservice;
     List<DonateFood> list ;
     private SessionManager sessionManager;
-    Button btnshowrequest;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-       // setContentView(R.layout.activity_request_food_list);
-        getLayoutInflater().inflate(R.layout.activity_request_food_list, findViewById(R.id.container));
+     //   setContentView(R.layout.activity_show_request_history);
+        getLayoutInflater().inflate(R.layout.activity_show_request_history, findViewById(R.id.container));
         recyclerView = findViewById(R.id.reqrecyclerView);
-        btnshowrequest = findViewById(R.id.btnshowrequest);
         donatefoodservice = new DonateFoodService();
         list = new ArrayList<>();
         sessionManager = SessionManager.getInstance(this);
         setAdapterFoodList();
-
-        btnshowrequest.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(RequestFoodListActivity.this, ShowRequestHistoryActivity.class);
-                startActivity(intent);
-            }
-        });
     }
     public void setAdapterFoodList()
     {
-        donatefoodservice.getAllRequestFoodList(sessionManager.getUserID(),new ListOperationCallback<List<DonateFood>>() {
+        donatefoodservice.fetchRequestedDonationList(sessionManager.getUserID(),new ListOperationCallback<List<DonateFood>>() {
             @Override
             public void onSuccess(List<DonateFood> data) {
                 list = new ArrayList<>(data);
-                adapter = new RequestFoodListAdapter(RequestFoodListActivity.this, list,RequestFoodListActivity.this);
 
-                RecyclerView.LayoutManager layoutManager = new GridLayoutManager(RequestFoodListActivity.this, 2);
+
+                adapter = new ShowRequestHistoryListAdapter(ShowRequestHistoryActivity.this, list,ShowRequestHistoryActivity.this,ShowRequestHistoryActivity.this);
+
+                RecyclerView.LayoutManager layoutManager = new GridLayoutManager(ShowRequestHistoryActivity.this, 2);
                 recyclerView.setLayoutManager(layoutManager);
                 recyclerView.setAdapter(adapter);
             }
@@ -78,8 +69,16 @@ public class RequestFoodListActivity extends BottomMenuActivity implements Reque
     public void onCartClick(int position) {
         DonateFood donateFood = list.get(position);
 
-        Intent intent = new Intent(RequestFoodListActivity.this, RequestFoodDetailActivity.class);
+        Intent intent = new Intent(ShowRequestHistoryActivity.this, RequestFoodSuccessActivity.class);
+        intent.putExtra("location", donateFood.location.getAddress());
+        startActivity(intent);
+    }
+    public void redirectToDetailPage(int position) {
+        DonateFood donateFood = list.get(position);
+
+        Intent intent = new Intent(ShowRequestHistoryActivity.this, RequestFoodDetailActivity.class);
         intent.putExtra("intentdonationId", donateFood.donationId);
+        intent.putExtra("collections", "1");
         startActivity(intent);
     }
 }

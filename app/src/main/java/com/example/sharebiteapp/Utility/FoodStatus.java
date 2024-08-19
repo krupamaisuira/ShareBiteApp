@@ -4,7 +4,8 @@ public enum FoodStatus {
     Available(0),
     Expired(1),
     Donated(2),
-    Requested(3);
+    Requested(3),
+    Cancelled(4);
 
     private int index;
 
