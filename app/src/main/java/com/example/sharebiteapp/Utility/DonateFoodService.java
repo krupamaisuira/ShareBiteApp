@@ -3,6 +3,9 @@
     import android.net.Uri;
     import android.util.Log;
     import android.widget.Toast;
+
+    import java.util.HashMap;
+    import java.util.Map;
     import java.util.concurrent.atomic.AtomicInteger;
     import androidx.annotation.NonNull;
 
@@ -13,6 +16,7 @@
     import com.example.sharebiteapp.ModelData.DonateFood;
     import com.example.sharebiteapp.ModelData.Location;
     import com.example.sharebiteapp.ModelData.Photos;
+    import com.example.sharebiteapp.ModelData.Report;
     import com.example.sharebiteapp.ModelData.RequestFood;
     import com.example.sharebiteapp.ModelData.User;
     import com.example.sharebiteapp.Utility.Interface.IDonateFood;
@@ -572,4 +576,58 @@ private void getAllPhotos(String donationId,ListOperationCallback<List<Uri>> cal
                 }
             });
         }
+
+        public void fetchReport(String userId, ListOperationCallback<Report> callback) {
+
+            final Map<String, Integer> state = new HashMap<>();
+            state.put("donations", 0);
+
+
+            // Fetch donations count
+            reference.child(_collectionName).orderByChild("donatedBy").equalTo(userId)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                                DonateFood model = snapshot.getValue(DonateFood.class);
+
+                                if (model.status  == FoodStatus.Donated.getIndex()  && model.fooddeleted == false) {
+                                    state.put("donations", state.get("donations") + 1);
+                                }
+                            }
+
+                            // Fetch donation requests count
+                            requestFoodService.fetchDonationRequests(userId, new ListOperationCallback<List<String>>() {
+                                @Override
+                                public void onSuccess(List<String> donationIds) {
+                                    int donations = state.get("donations");
+                                    int collections = donationIds.size();
+                                    Report report = new Report(collections, donations);
+                                    if (callback != null) {
+                                        callback.onSuccess(report);
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(String error) {
+                                    if (callback != null) {
+                                        callback.onFailure(error);
+                                    }
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            if (callback != null) {
+                                callback.onFailure(databaseError.getMessage());
+                            }
+                        }
+                    });
+        }
+
+
+
+
     }

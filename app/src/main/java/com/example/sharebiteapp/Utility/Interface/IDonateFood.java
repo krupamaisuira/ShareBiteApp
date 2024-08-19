@@ -4,6 +4,7 @@ import com.example.sharebiteapp.Interface.ListOperationCallback;
 import com.example.sharebiteapp.Interface.OperationCallback;
 import com.example.sharebiteapp.ModelData.DonateFood;
 import com.example.sharebiteapp.ModelData.Location;
+import com.example.sharebiteapp.ModelData.Report;
 
 import java.util.List;
 
@@ -18,5 +19,6 @@ public interface IDonateFood {
     void getAllRequestFoodList(String userId,final ListOperationCallback<List<DonateFood>> callback);
     void updatedonatedfood(DonateFood food, OperationCallback callback);
     void updateFoodStatus(String uid,int status,OperationCallback callback);
+    void fetchReport(String userId, ListOperationCallback<Report> callback);
 
 }
