@@ -150,9 +150,10 @@ public class RequestFoodService implements IRequestFood {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            String requestForId = snapshot.child("requestforId").getValue(String.class);
-                            if (requestForId != null) {
-                                donationIds.add(requestForId);
+                            RequestFood model = snapshot.getValue(RequestFood.class);
+
+                            if ( model.requestforId != null && model.cancelon == null) {
+                                donationIds.add( model.requestforId);
                             }
                         }
                         if (callback != null) {

@@ -38,6 +38,7 @@ public class RequestFoodDetailActivity extends BottomMenuActivity {
     private ImageView[] imageViews;
     private ImageView firstimg;
     String foodRequestId;
+    int showcancelled = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +59,17 @@ public class RequestFoodDetailActivity extends BottomMenuActivity {
         firstimg = findViewById(R.id.reqfirstimg);
 
         String donationId =  getIntent().getStringExtra("intentdonationId");
-        int showcancelled =  Integer.parseInt(getIntent().getStringExtra("collections"));
+        String collectionsString = getIntent().getStringExtra("collections");
+
+        if (collectionsString != null) {
+            try {
+                showcancelled = Integer.parseInt(collectionsString);
+            } catch (NumberFormatException e) {
+                showcancelled = 0;
+            }
+        }
+
+
         btnCancelFood.setVisibility(View.GONE);
         donateFoodService.getDonationDetail(donationId, new ListOperationCallback<DonateFood>() {
             @Override

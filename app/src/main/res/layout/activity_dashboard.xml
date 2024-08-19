@@ -39,6 +39,7 @@
                 android:src="@drawable/love" />
 
             <TextView
+                android:id="@+id/txtdonations"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0 Donations"
@@ -63,6 +64,7 @@
                 android:src="@drawable/handshake" />
 
             <TextView
+                android:id="@+id/txtcollections"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0 Collections"
