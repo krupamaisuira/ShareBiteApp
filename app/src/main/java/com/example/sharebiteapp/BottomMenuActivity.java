@@ -55,4 +55,15 @@ public class BottomMenuActivity extends AppCompatActivity {
             }
         });
     }
+    @Override
+    public void onBackPressed() {
+        // Handle navigation instead of exiting the app
+        // For example, navigate to a specific activity or stay on the current page
+        super.onBackPressed();
+        Intent intent = new Intent(this, DashboardActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+        // Do not call super.onBackPressed() if you do not want to exit the current activity
+    }
+
 }
