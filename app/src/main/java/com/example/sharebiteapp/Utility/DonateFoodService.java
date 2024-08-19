@@ -442,40 +442,6 @@ private void getAllPhotos(String donationId,ListOperationCallback<List<Uri>> cal
                     });
         }
 
-
-        public void fetchUserRequestsForDonor(final String donorUserId, final ListOperationCallback<List<DonateFood>> callback) {
-            // Query donatefood to get donations by the donor
-            reference.child(_collectionName).orderByChild("donatedBy").equalTo(donorUserId)
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot donateFoodSnapshot) {
-                            final List<DonateFood> donationList = new ArrayList<>();
-
-                            // Collect donation objects
-                            for (DataSnapshot donationSnapshot : donateFoodSnapshot.getChildren()) {
-                                DonateFood donateFood = donationSnapshot.getValue(DonateFood.class);
-                                if (donateFood != null) {
-                                    donationList.add(donateFood);
-                                }
-                            }
-
-                            // If no donations are found
-                            if (donationList.isEmpty()) {
-                                callback.onFailure("No donations found for this donor.");
-                                return;
-                            }
-
-                            // Fetch requests for the collected donations
-                            requestFoodService.fetchRequestsForDonations(donationList, callback);
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            callback.onFailure("Failed to read donatefood data: " + databaseError.getMessage());
-                        }
-                    });
-        }
-
         public void updateFoodStatus(String uid,int status,OperationCallback callback)
         {
             reference.child(_collectionName).child(uid).child("status").setValue(status).addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -495,5 +461,115 @@ private void getAllPhotos(String donationId,ListOperationCallback<List<Uri>> cal
             });
         }
 
+        public void fetchRequestedDonationList(String userId,ListOperationCallback<List<DonateFood>>  callback)
+        {
+            requestFoodService.fetchDonationRequests(userId, new ListOperationCallback<List<String>>() {
+                @Override
+                public void onSuccess(List<String> donationIds) {
 
+                    List<DonateFood> donateFoodList = new ArrayList<>();
+                    if (donationIds.isEmpty()) {
+
+                        callback.onSuccess(donateFoodList);
+                        return;
+                    }
+
+
+                    for (String donationId : donationIds) {
+                       getRequestDonationDetail(donationId, new ListOperationCallback<DonateFood>() {
+                            @Override
+                            public void onSuccess(DonateFood donateFood) {
+                                // Add the fetched donation details to the list
+                                donateFoodList.add(donateFood);
+
+                                // Step 5: Once all donation details are fetched, return the list
+                                if (donateFoodList.size() == donationIds.size()) {
+                                    callback.onSuccess(donateFoodList);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(String error) {
+                                // Handle error case if fetching donation details fails
+                                callback.onFailure(error);
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onFailure(String error) {
+                    callback.onFailure(error);
+                }
+            });
+
+        }
+        public void getRequestDonationDetail(String donationid, ListOperationCallback<DonateFood> callback) {
+
+            reference.child(_collectionName).child(donationid).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                    DonateFood food = snapshot.getValue(DonateFood.class);
+
+                    if (food != null) {
+                        food.setDonationId(donationid);
+
+                        Log.d("d", "DonateFood found with donationId: " + food.getDonationId());
+                        getAllPhotos(food.getDonationId(), new ListOperationCallback<List<Uri>>() {
+                            @Override
+                            public void onSuccess(List<Uri> imageUris) {
+                                Log.d("d", "photo data: " + imageUris.size());
+                                food.setUploadedImageUris(imageUris);
+                                locationService.getLocationByDonationId(food.getDonationId(), new ListOperationCallback<Location>() {
+                                    @Override
+                                    public void onSuccess(Location data) {
+                                        Log.d("d", "location data: " + data.address);
+                                        food.location = data;
+                                        if (callback != null) {
+                                            callback.onSuccess(food);
+
+                                        }
+
+                                    }
+
+                                    @Override
+                                    public void onFailure(String error) {
+                                        Log.e("d", "Error fetching location: " + error);
+                                        if (callback != null) {
+                                            callback.onFailure(error);
+                                        }
+                                    }
+                                });
+
+
+                                if (callback != null) {
+                                    callback.onSuccess(food);
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(String error) {
+
+                                if (callback != null) {
+                                    callback.onFailure(error);
+                                }
+                            }
+                        });
+                    } else {
+                        if (callback != null) {
+                            callback.onFailure("DonateFood not found.");
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError e) {
+                    Log.e("d", "DatabaseError: " + e.getMessage());
+                    if (callback != null) {
+                        callback.onFailure(e.getMessage());
+                    }
+                }
+            });
+        }
     }

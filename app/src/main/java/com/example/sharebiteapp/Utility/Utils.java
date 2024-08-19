@@ -88,6 +88,10 @@ public class Utils {
                 textColor = ContextCompat.getColor(context, R.color.dark_orange);
                 backgroundColor = ContextCompat.getColor(context, R.color.light_yellow);
                 break;
+            case Cancelled:
+                textColor = ContextCompat.getColor(context, R.color.grey);
+                backgroundColor = ContextCompat.getColor(context, R.color.light_grey);
+                break;
             default:
                 textColor = ContextCompat.getColor(context, android.R.color.white);
                 backgroundColor = ContextCompat.getColor(context, R.color.holo_blue);
@@ -134,7 +138,7 @@ public class Utils {
         } catch (ParseException e) {
 
             e.printStackTrace();
-            return -1;
+            return 0;
         }
     }
    public static boolean isFirebaseStorageUrl(String url) {

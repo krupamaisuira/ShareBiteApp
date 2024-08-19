@@ -31,12 +31,13 @@ import com.example.sharebiteapp.Utility.Utils;
 public class RequestFoodDetailActivity extends BottomMenuActivity {
 
     DonateFoodService donateFoodService;
-    Button btnRequestFood,buttonDonated,buttonCancel;
+    Button btnRequestFood,btnCancelFood;
     private SessionManager sessionManager;
     RequestFoodService requestFoodService;
     String location;
     private ImageView[] imageViews;
     private ImageView firstimg;
+    String foodRequestId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +46,7 @@ public class RequestFoodDetailActivity extends BottomMenuActivity {
         getLayoutInflater().inflate(R.layout.activity_request_food_detail, findViewById(R.id.container));
         donateFoodService = new DonateFoodService();
         btnRequestFood = findViewById(R.id.btnRequestFood);
+        btnCancelFood = findViewById(R.id.btnCancelFood);
         requestFoodService = new RequestFoodService();
         sessionManager = SessionManager.getInstance(this);
         imageViews = new ImageView[]{
@@ -56,10 +58,32 @@ public class RequestFoodDetailActivity extends BottomMenuActivity {
         firstimg = findViewById(R.id.reqfirstimg);
 
         String donationId =  getIntent().getStringExtra("intentdonationId");
+        int showcancelled =  Integer.parseInt(getIntent().getStringExtra("collections"));
+        btnCancelFood.setVisibility(View.GONE);
         donateFoodService.getDonationDetail(donationId, new ListOperationCallback<DonateFood>() {
             @Override
             public void onSuccess(DonateFood model) {
+                if(model.requestedBy != null) {
+                    foodRequestId = model.requestedBy.requestId;
+                }
                 Log.d("donate", "Donation detail fetched successfully");
+                if(showcancelled == 1)
+                {
+                    btnRequestFood.setVisibility(View.GONE);
+                    if(model.getStatus() == FoodStatus.Requested.getIndex()) {
+                        btnCancelFood.setVisibility(View.VISIBLE);
+                    }
+                    else if(model.getStatus() == FoodStatus.Available.getIndex())
+                    {
+                        btnRequestFood.setVisibility(View.VISIBLE);
+                    }
+
+                }
+                else
+                {
+                    btnCancelFood.setVisibility(View.GONE);
+                    btnRequestFood.setVisibility(View.VISIBLE);
+                }
                 setDetail(model);
             }
 
@@ -101,6 +125,36 @@ public class RequestFoodDetailActivity extends BottomMenuActivity {
                     }
                 });
 
+            }
+        });
+        btnCancelFood.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                requestFoodService.requestFoodCancel(foodRequestId, sessionManager.getUserID(), new OperationCallback() {
+                    @Override
+                    public void onSuccess() {
+                        Intent intent = new Intent(RequestFoodDetailActivity.this, ShowRequestHistoryActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+
+                    @Override
+                    public void onFailure(String errMessage) {
+                        Toast.makeText(getApplicationContext(), "Error: " + errMessage, Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                donateFoodService.updateFoodStatus(donationId, FoodStatus.Available.getIndex(), new OperationCallback() {
+                    @Override
+                    public void onSuccess() {
+
+
+                    }
+                    @Override
+                    public void onFailure(String errMessage) {
+                        Toast.makeText(getApplicationContext(), "Error: " + errMessage, Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
     }
