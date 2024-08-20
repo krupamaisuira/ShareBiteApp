@@ -121,6 +121,8 @@ public class DonateFoodDetail extends BottomMenuActivity {
                 }
                 else
                 {
+                    buttonCancel.setVisibility(View.GONE);
+                    buttonDonated.setVisibility(View.GONE);
                     Utils.setStatusColor(DonateFoodDetail.this,FoodStatus.Donated, txtDetailStatus);
                     txtDetailStatus.setText("Donated");
                     Toast.makeText(getApplicationContext(), "Food donated", Toast.LENGTH_SHORT).show();
@@ -188,13 +190,19 @@ public class DonateFoodDetail extends BottomMenuActivity {
             }
         }
 
-        if (model.requestedBy != null && (model.status == FoodStatus.Requested.getIndex() || model.status == FoodStatus.Available.getIndex() )) {
+        if (model.requestedBy != null) {
             requestedBySection.setVisibility(View.VISIBLE);
 
             TextView userName = findViewById(R.id.userName);
             TextView userEmail = findViewById(R.id.userEmail);
             TextView userPhone = findViewById(R.id.userPhone);
-
+            buttonCancel.setVisibility(View.GONE);
+            buttonDonated.setVisibility(View.GONE);
+            if((model.status == FoodStatus.Requested.getIndex() || model.status == FoodStatus.Available.getIndex() ) && (model.requestedBy.cancelon == null))
+            {
+                buttonCancel.setVisibility(View.VISIBLE);
+                buttonDonated.setVisibility(View.VISIBLE);
+            }
             // Assuming requestedBy has the required fields
             userName.setText("User Name: " + model.requestedBy.requestedUserDetail.getUsername());
             userEmail.setText("Email: " + model.requestedBy.requestedUserDetail.getEmail());
