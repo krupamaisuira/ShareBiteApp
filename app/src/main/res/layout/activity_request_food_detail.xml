@@ -18,9 +18,9 @@
 
     <ImageView
         android:id="@+id/reqfirstimg"
-        android:layout_width="match_parent"
+        android:layout_width="400dp"
         android:layout_height="250dp"
-        android:background="@android:drawable/ic_menu_gallery"
+        android:scaleType="fitCenter"
         />
 
     <View
@@ -117,7 +117,7 @@
             android:layout_height="100dp"
             android:layout_marginEnd="8dp"
             android:background="@android:drawable/ic_menu_gallery"
-            android:scaleType="centerInside"
+            android:scaleType="fitXY"
             android:visibility="gone"
             />
 
@@ -127,7 +127,7 @@
             android:layout_height="100dp"
             android:layout_marginEnd="8dp"
             android:background="@android:drawable/ic_menu_gallery"
-            android:scaleType="centerInside"
+            android:scaleType="fitXY"
             android:visibility="gone"
             />
 
@@ -137,7 +137,7 @@
             android:layout_height="100dp"
             android:layout_marginEnd="8dp"
             android:background="@android:drawable/ic_menu_gallery"
-            android:scaleType="centerInside"
+            android:scaleType="fitXY"
             android:visibility="gone"
             />
 
@@ -147,7 +147,7 @@
             android:layout_height="100dp"
             android:layout_marginEnd="8dp"
             android:background="@android:drawable/ic_menu_gallery"
-            android:scaleType="centerInside"
+            android:scaleType="fitXY"
             android:visibility="gone"
             />
 

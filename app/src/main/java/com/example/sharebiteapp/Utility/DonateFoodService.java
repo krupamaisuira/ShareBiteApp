@@ -219,7 +219,7 @@
                                             public void onSuccess(RequestFood existingRequest) {
 
                                                // Log.d("d", "RequestFood exists with requestedBy: " + existingRequest.requestedBy);
-                                                    if(existingRequest != null &&   (!snapshot.hasChild("cancelon") || existingRequest.cancelby == null)) {
+                                                    if(existingRequest != null) {
                                                     food.requestedBy = existingRequest;
                                                 }
                                                 if (callback != null) {

@@ -430,6 +430,10 @@ public class DonateFoodUpdateActivity extends BottomMenuActivity {
                 imgCapture.setVisibility(View.GONE);
             }
         }
+        if(model.status == FoodStatus.Donated.getIndex())
+        {
+            editbtndonate.setVisibility(View.GONE);
+        }
 
 
     }
