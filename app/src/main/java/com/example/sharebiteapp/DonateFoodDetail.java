@@ -198,7 +198,7 @@ public class DonateFoodDetail extends BottomMenuActivity {
             TextView userPhone = findViewById(R.id.userPhone);
             buttonCancel.setVisibility(View.GONE);
             buttonDonated.setVisibility(View.GONE);
-            if((model.status == FoodStatus.Requested.getIndex() || model.status == FoodStatus.Available.getIndex() ) && (model.requestedBy.cancelon == null))
+            if((model.status == FoodStatus.Requested.getIndex()) && (model.requestedBy.cancelon == null))
             {
                 buttonCancel.setVisibility(View.VISIBLE);
                 buttonDonated.setVisibility(View.VISIBLE);
