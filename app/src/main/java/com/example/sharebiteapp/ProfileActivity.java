@@ -22,7 +22,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class ProfileActivity extends BottomMenuActivity {
 
-    TextView txtLogout,txtprofileuser,txtchangepwd,txtdelprofile;
+    TextView txtLogout,txtprofileuser,txtchangepwd,txtdelprofile,txteditprofile;
     private SessionManager sessionManager;
     UserService userService;
     FirebaseAuth mAuth;
@@ -37,6 +37,7 @@ public class ProfileActivity extends BottomMenuActivity {
         txtchangepwd = findViewById(R.id.txtchangepwd);
         txtdelprofile = findViewById(R.id.txtdelprofile);
         switchNotify = findViewById(R.id.switchNotify);
+        txteditprofile = findViewById(R.id.txteditprofile);
         mAuth = FirebaseAuth.getInstance();
         sessionManager = SessionManager.getInstance(this);
         userService = new UserService();
@@ -61,6 +62,14 @@ public class ProfileActivity extends BottomMenuActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(ProfileActivity.this, ChangePasswordActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+        txteditprofile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(ProfileActivity.this, EditProfileActivity.class);
                 startActivity(intent);
                 finish();
             }

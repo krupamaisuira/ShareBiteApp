@@ -28,7 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="Browse available food donations and request items that you need. Help us reduce waste and feed those in need"
+        android:text="Thank you for your support! Please review the requested food donations below and cancel any items no longer needed. This helps us minimize waste and ensure the food reaches those in need."
         android:textSize="14dp"
         android:layout_marginTop="8dp"
         android:padding="16dp" />

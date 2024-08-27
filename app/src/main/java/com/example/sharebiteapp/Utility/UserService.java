@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 
 import com.example.sharebiteapp.Interface.OperationCallback;
 import com.example.sharebiteapp.Interface.UserCallback;
+import com.example.sharebiteapp.ModelData.Location;
 import com.example.sharebiteapp.ModelData.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -20,6 +21,7 @@ interface IUser
 {
     void createUser(User user, OperationCallback callback);
     void getUserByID(String uid, UserCallback callback);
+    void updateUser(User user, OperationCallback callback);
 }
 
 public class UserService implements IUser {
@@ -126,5 +128,26 @@ public class UserService implements IUser {
                 }
             }
         });
+    }
+    @Override
+    public void updateUser(User model, OperationCallback callback){
+
+        reference.child(_collectionName).child(model.getUserID()).updateChildren(model.toMapUpdate())
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        if (callback != null) {
+                            callback.onSuccess();
+                        }
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        if (callback != null) {
+                            callback.onFailure(e.getMessage());
+                        }
+                    }
+                });
     }
 }

@@ -2,6 +2,9 @@ package com.example.sharebiteapp.ModelData;
 
 import com.example.sharebiteapp.Utility.Utils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class User {
     String userID,username,mobilenumber,email,createdon;
     Boolean profiledeleted,notification;
@@ -68,7 +71,14 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
+    public Map<String, Object> toMapUpdate() {
+        Map<String, Object> result = new HashMap<>();
+        result.put("username", username);
+        result.put("mobilenumber", mobilenumber);
+        result.put("email", email);
 
+        return result;
+    }
 
 
 
